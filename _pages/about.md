@@ -8,51 +8,59 @@ redirect_from:
   - /about.html
 ---
 
-{% if site.google_scholar_stats_use_cdn %}
-{% assign gsDataBaseUrl = "https://cdn.jsdelivr.net/gh/" | append: site.repository | append: "@" %}
-{% else %}
-{% assign gsDataBaseUrl = "https://raw.githubusercontent.com/" | append: site.repository | append: "/" %}
-{% endif %}
-{% assign url = gsDataBaseUrl | append: "google-scholar-stats/gs_data_shieldsio.json" %}
-
 <span class='anchor' id='about-me'></span>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet. Suspendisse condimentum, libero vel tempus mattis, risus risus vulputate libero, elementum fermentum mi neque vel nisl. Maecenas facilisis maximus dignissim. Curabitur mattis vulputate dui, tincidunt varius libero luctus eu. Mauris mauris nulla, scelerisque eget massa id, tincidunt congue felis. Sed convallis tempor ipsum rhoncus viverra. Pellentesque nulla orci, accumsan volutpat fringilla vitae, maximus sit amet tortor. Aliquam ultricies odio ut volutpat scelerisque. Donec nisl nisl, porttitor vitae pharetra quis, fringilla sed mi. Fusce pretium dolor ut aliquam consequat. Cras volutpat, tellus accumsan mattis molestie, nisl lacus tempus massa, nec malesuada tortor leo vel quam. Aliquam vel ex consectetur, vehicula leo nec, efficitur eros. Donec convallis non urna quis feugiat.
-
-My research interest includes neural machine translation and computer vision. I have published more than 100 papers at the top international AI conferences with total <a href='https://scholar.google.com/citations?user=DhtAFkwAAAAJ'>google scholar citations <strong><span id='total_cit'>260000+</span></strong></a> (You can also use google scholar badge <a href='https://scholar.google.com/citations?user=DhtAFkwAAAAJ'><img src="https://img.shields.io/endpoint?url={{ url | url_encode }}&logo=Google%20Scholar&labelColor=f6f6f6&color=9cf&style=flat&label=citations"></a>).
-
+I am currently a dual degree undergraduate student at Zhejiang University and University of Illinois at Urbana-Champaign.
+My research interest includes Computer Architrecture, Hardware/Software Co-design, VLSI and Electronic Design Automation.
 
 # 🔥 News
-- *2022.02*: &nbsp;🎉🎉 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet. 
-- *2022.02*: &nbsp;🎉🎉 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet. 
+- *2025.03*: &nbsp;🎉🎉 Awarded the qualification of recommendation for Outstanding Graduate of Zhejiang Province!
+- *2024.12*: &nbsp;🎉🎉 Our group implemented the first Out-of-Order RISC-V processor design with IPC>1 in the history of UIUC ECE411 course!
+- *2024.10*: &nbsp;🎉🎉 Excited to share that I will be joining The Chinese University of Hong Kong as a Ph.D. student in Computer Science and Engineering under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) in Fall 2025!
 
-# 📝 Publications 
-
-<div class='paper-box'><div class='paper-box-image'><div><div class="badge">CVPR 2016</div><img src='images/500x300.png' alt="sym" width="100%"></div></div>
-<div class='paper-box-text' markdown="1">
-
-[Deep Residual Learning for Image Recognition](https://openaccess.thecvf.com/content_cvpr_2016/papers/He_Deep_Residual_Learning_CVPR_2016_paper.pdf)
-
-**Kaiming He**, Xiangyu Zhang, Shaoqing Ren, Jian Sun
-
-[**Project**](https://scholar.google.com/citations?view_op=view_citation&hl=zh-CN&user=DhtAFkwAAAAJ&citation_for_view=DhtAFkwAAAAJ:ALROH1vI_8AC) <strong><span class='show_paper_citations' data='DhtAFkwAAAAJ:ALROH1vI_8AC'></span></strong>
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet. 
-</div>
-</div>
-
-- [Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet](https://github.com), A, B, C, **CVPR 2020**
-
-# 🎖 Honors and Awards
-- *2021.10* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet. 
-- *2021.09* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet. 
 
 # 📖 Educations
-- *2019.06 - 2022.04 (now)*, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet. 
-- *2015.09 - 2019.06*, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet. 
+<div style="display: flex; align-items: center; gap: 40px;">
+    <img src="images/uiuc.jpg" alt="UIUC Logo" style="width: 150px;">
+    <div>
+        <strong>Bachelor of Science in Electrical Engineering </strong><br>
+        Minor in Computer Science<br>
+        University of Illinois at Urbana-Champaign<br>
+        <em>Sep 2021 - Jun 2025 (Expected)</em>
+    </div>
+</div>
+<div style="display: flex; align-items: center; gap: 40px; margin-top: 10px;">
+    <img src="images/zju.jpg" alt="ZJU Logo" width="150">
+    <div>
+        <strong>Bachelor of Engineering in Electrical Engineering & Automation</strong><br>
+        Zhejiang University<br>
+        <em>Sep 2021 - Jun 2025 (Expected)</em>
+    </div>
+</div>
 
-# 💬 Invited Talks
-- *2021.06*, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet. 
-- *2021.03*, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet.  \| [\[video\]](https://github.com/)
 
-# 💻 Internships
-- *2019.05 - 2020.02*, [Lorem](https://github.com/), China.
+# 🏅 Selected Awards
+<table style="border-collapse: collapse; width: 80%; border: none;">
+  <tr style="vertical-align: top; line-height: 1.8;">
+    <td style="border: none; padding: 0 5px 0 0;">Postgraduate Studentship</td>
+    <td style="border: none; padding: 0 5px;">The Chinese University of Hong Kong</td>
+    <td style="border: none; padding: 0;">2025-2029</td>
+  </tr>
+  <!-- NOT YET
+  <tr style="vertical-align: top; line-height: 1.8;">
+    <td style="border: none; padding: 0 5px 0 0;">Outstanding Graduate</td>
+    <td style="border: none; padding: 0 5px;">Department of Education of Zhejiang Province</td>
+    <td style="border: none; padding: 0;">2025</td>
+  </tr>
+  -->
+  <tr style="vertical-align: top; line-height: 1.8;">
+    <td style="border: none; padding: 0 5px 0 0;">Perry, H. & R. Scholarship</td>
+    <td style="border: none; padding: 0 5px;">University of Illinois at Urbana-Champaign</td>
+    <td style="border: none; padding: 0;">2024</td>
+  </tr>
+  <tr style="vertical-align: top; line-height: 1.8;">
+    <td style="border: none; padding: 0 5px 0 0;">Zhejiang Government Scholarship</td>
+    <td style="border: none; padding: 0 5px;">Department of Education of Zhejiang Province</td>
+    <td style="border: none; padding: 0;">2022-2023</td>
+  </tr>
+</table>
