@@ -40,7 +40,7 @@ My research interest includes Computer Architrecture, Hardware/Software Co-desig
 
 
 # 🏅 Selected Awards
-<table style="border-collapse: collapse; width: 80%; border: none;">
+<table style="border-collapse: collapse; width: 100%; border: none;">
   <tr style="vertical-align: top; line-height: 1.8;">
     <td style="border: none; padding: 0 5px 0 0;">Postgraduate Studentship</td>
     <td style="border: none; padding: 0 5px;">The Chinese University of Hong Kong</td>
