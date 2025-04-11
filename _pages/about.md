@@ -15,7 +15,7 @@ My research interest includes Computer Architrecture, Hardware/Software Co-desig
 
 # 🔥 News
 - *2025.03*: &nbsp;🎉🎉 Awarded the qualification of recommendation for Outstanding Graduate of Zhejiang Province!
-- *2024.12*: &nbsp;🎉🎉 Our group implemented the first Out-of-Order RISC-V processor design with IPC>1 in the history of UIUC ECE411 course!
+- *2024.12*: &nbsp;🎉🎉 Our team implemented the first Out-of-Order RISC-V processor design with IPC>1 in the history of UIUC ECE411 course!
 - *2024.10*: &nbsp;🎉🎉 Excited to share that I will be joining The Chinese University of Hong Kong as a Ph.D. student in Computer Science and Engineering under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) in Fall 2025!
 
 
