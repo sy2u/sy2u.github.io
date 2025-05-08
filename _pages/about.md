@@ -24,7 +24,7 @@ My research interest includes Computer Architecture, Hardware/Software Co-design
 
 # 🎓 Educations
 - **B.S. in Electrical Engineering**, Minor in Computer Science, University of Illinois at Urbana-Champaign, Sep 2021-Jun 2025 (Expected)  
-- **B.Eng. in Electrical Engineering & Automation**, Zhejiang University, Sep 2021-Jun 2025 (Expected)
+- **B.Eng. in Electrical Engineering and Automation**, Zhejiang University, Sep 2021-Jun 2025 (Expected)
 
 <!-- Another Style
 <div style="display: flex; align-items: center; gap: 40px;">
