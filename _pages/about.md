@@ -10,41 +10,24 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-I am currently a dual degree undergraduate student at Zhejiang University <img src="images/zju.jpg" style="height:1em; vertical-align: text-bottom;"> and University of Illinois at Urbana-Champaign <img src="images/uiuc.jpg" style="height:1em; vertical-align: text-bottom;">.
-My research interest includes Computer Architecture, Hardware/Software Co-design, VLSI Systems and Electronic Design Automation.
+I am a final-year undergraduate in the dual-degree program between Zhejiang University and University of Illinois at Urbana-Champaign. Starting Fall 2025, I will pursue a Ph.D. in Computer Science and Engineering at The Chinese University of Hong Kong, under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/).
+My research interests include Computer Architecture, Hardware/Software Co-design, VLSI Systems and Electronic Design Automation.
 
 
 
 # 🔥 News
-- *2025.03*: &nbsp; Awarded the qualification of recommendation for Outstanding Graduate of Zhejiang Province! ([ZJUI-News](https://mp.weixin.qq.com/s/zDORfjgwsuWj8OlwH1fZCQ))
-- *2024.12*: &nbsp; Our team implemented the first Out-of-Order RISC-V processor design with IPC>1 in the history of UIUC ECE411 course!
-- *2024.10*: &nbsp; Excited to share that I will be joining The Chinese University of Hong Kong <img src="images/cuhk.png" style="height:1em; vertical-align: text-bottom;"> as a Ph.D. student in Computer Science and Engineering under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) in Fall 2025!
+- *2025.06*: &nbsp; Graduated from University of Illinois at Urbana-Champaign! ([photo](images/uiuc_commencement.jpg))
+- *2025.05*: &nbsp; Honored to have my undergraduate journey highlighted in a feature article. ([ZJUI-News](https://mp.weixin.qq.com/s/Jj4wU9RhvVGYad-gluZGow))
+- *2025.03*: &nbsp; Awarded the qualification of recommendation for Outstanding Graduate of Zhejiang Province. ([ZJUI-News](https://mp.weixin.qq.com/s/zDORfjgwsuWj8OlwH1fZCQ))
 
 
 
-# 🎓 Educations
-- **B.S. in Electrical Engineering**, Minor in Computer Science, University of Illinois at Urbana-Champaign, Sep 2021-Jun 2025 (Expected)  
+# 🎓 Education
+<!-- Not yet -->
+- **Ph.D. in Computer Science and Engineering**, The Chinese University of Hong Kong, Starting Aug 2025
+- **B.S. in Electrical Engineering**, Minor in Computer Science, University of Illinois at Urbana-Champaign, Sep 2021-Jun 2025  
 - **B.Eng. in Electrical Engineering and Automation**, Zhejiang University, Sep 2021-Jun 2025 (Expected)
-
-<!-- Another Style
-<div style="display: flex; align-items: center; gap: 40px;">
-    <img src="images/uiuc.jpg" alt="UIUC Logo" style="width: 150px;">
-    <div>
-        <strong>B.S. in Electrical Engineering </strong><br>
-        Minor in Computer Science<br>
-        University of Illinois at Urbana-Champaign<br>
-        <em>Sep 2021 - Jun 2025 (Expected)</em>
-    </div>
-</div>
-<div style="display: flex; align-items: center; gap: 40px; margin-top: 10px;">
-    <img src="images/zju.jpg" alt="ZJU Logo" width="150">
-    <div>
-        <strong>B.Eng. in Electrical Engineering & Automation</strong><br>
-        Zhejiang University<br>
-        <em>Sep 2021 - Jun 2025 (Expected)</em>
-    </div>
-</div>
--->
+ 
 
 
 # 📖 Teaching
@@ -68,22 +51,4 @@ My research interest includes Computer Architecture, Hardware/Software Co-design
 - Perry, H. & R. Scholarship, University of Illinois at Urbana-Champaign, 2024
 - Zhejiang Provincial Government Scholarship, Department of Education of Zhejiang Province, 2022-2023
 
-<!--
-<table style="border-collapse: collapse; width: 100%; border: none;">
-  <tr style="vertical-align: top; line-height: 1.8;">
-    <td style="border: none; padding: 0 5px 0 0;">Postgraduate Studentship</td>
-    <td style="border: none; padding: 0 5px;">The Chinese University of Hong Kong</td>
-    <td style="border: none; padding: 0;">2025-2029</td>
-  </tr>
-  <tr style="vertical-align: top; line-height: 1.8;">
-    <td style="border: none; padding: 0 5px 0 0;">Perry, H. & R. Scholarship</td>
-    <td style="border: none; padding: 0 5px;">University of Illinois at Urbana-Champaign</td>
-    <td style="border: none; padding: 0;">2024</td>
-  </tr>
-  <tr style="vertical-align: top; line-height: 1.8;">
-    <td style="border: none; padding: 0 5px 0 0;">Zhejiang Provincial Government Scholarship</td>
-    <td style="border: none; padding: 0 5px;">Department of Education of Zhejiang Province</td>
-    <td style="border: none; padding: 0;">2022-2023</td>
-  </tr>
-</table>
--->
+
