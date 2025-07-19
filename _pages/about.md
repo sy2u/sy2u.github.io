@@ -10,24 +10,40 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-I am a final-year undergraduate in the dual-degree program between Zhejiang University and University of Illinois at Urbana-Champaign. Starting Fall 2025, I will pursue a Ph.D. in Computer Science and Engineering at The Chinese University of Hong Kong, under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/).
+I will pursue a Ph.D. in Computer Science and Engineering at The Chinese University of Hong Kong, under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) since fall 2025. 
+<!---
+Prior to that, I obtained my B.S. degree in Elecrical Engineering from University of Illinois at Urbana-Champaign，and my B.Eng degree in Elecrical Engineering and Automation from Zhejiang University in 2025.
+--->
 My research interests include Computer Architecture, Hardware/Software Co-design, VLSI Systems and Electronic Design Automation.
 
 
 
 # 🔥 News
+- *2025.06*: &nbsp; Graduated from Zhejiang University! ([photo](images/zju_commencement.jpg))
 - *2025.06*: &nbsp; Graduated from University of Illinois at Urbana-Champaign! ([photo](images/uiuc_commencement.jpg))
 - *2025.05*: &nbsp; Honored to have my undergraduate journey highlighted in a feature article. ([ZJUI-News](https://mp.weixin.qq.com/s/Jj4wU9RhvVGYad-gluZGow))
-- *2025.03*: &nbsp; Awarded the qualification of recommendation for Outstanding Graduate of Zhejiang Province. ([ZJUI-News](https://mp.weixin.qq.com/s/zDORfjgwsuWj8OlwH1fZCQ))
 
 
 
 # 🎓 Education
-<!-- Not yet -->
-- **Ph.D. in Computer Science and Engineering**, The Chinese University of Hong Kong, Starting Aug 2025
-- **B.S. in Electrical Engineering**, Minor in Computer Science, University of Illinois at Urbana-Champaign, Sep 2021-Jun 2025  
-- **B.Eng. in Electrical Engineering and Automation**, Zhejiang University, Sep 2021-Jun 2025 (Expected)
- 
+- **Ph.D. in Computer Science and Engineering**, The Chinese University of Hong Kong, Aug/2025 -  
+- **B.Eng. in Electrical Engineering and Automation**, Zhejiang University, Sep/2021 - Jul/2025  
+- **B.S. in Electrical Engineering**, Minor in Computer Science, University of Illinois at Urbana-Champaign, Aug/2021 - May/2025  
+
+
+
+# 📝 Publications 
+- [C1] Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu, “GPU Acceleration for Versatile Buffer Insertion”, IEEE/ACM International Conference on Computer-Aided Design (ICCAD), Munich, Oct. 26–30, 2025.
+
+
+
+
+# 🌟 Selected Awards
+- Postgraduate Studentship, The Chinese University of Hong Kong, 2025-2029
+- Outstanding Graduate,  Zhejiang University / Department of Education of Zhejiang Province, 2025
+- Perry, H. & R. Scholarship, University of Illinois at Urbana-Champaign, 2024
+- Zhejiang Provincial Government Scholarship, Department of Education of Zhejiang Province, 2022-2023
+
 
 
 # 📖 Teaching
@@ -42,13 +58,4 @@ My research interests include Computer Architecture, Hardware/Software Co-design
 
 - [RHET 101/102: Principles of Writing/Research](http://catalog.illinois.edu/courses-of-instruction/rhet/) with 
   [Prof. Mary Hays](https://english.illinois.edu/directory/profile/maryhays)
-  @ZJU-UIUC, Fall 2022/Spring 2023
-
-
-
-# 🌟 Selected Awards
-- Postgraduate Studentship, The Chinese University of Hong Kong, 2025-2029
-- Perry, H. & R. Scholarship, University of Illinois at Urbana-Champaign, 2024
-- Zhejiang Provincial Government Scholarship, Department of Education of Zhejiang Province, 2022-2023
-
-
+  @ZJU-UIUC, Fall 2022 / Spring 2023
