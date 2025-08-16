@@ -10,31 +10,27 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-I will pursue a Ph.D. in Computer Science and Engineering at The Chinese University of Hong Kong, under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) since fall 2025. 
-<!---
-Prior to that, I obtained my B.S. degree in Elecrical Engineering from University of Illinois at Urbana-Champaign，and my B.Eng degree in Elecrical Engineering and Automation from Zhejiang University in 2025.
---->
-My research interests include Computer Architecture, Hardware/Software Co-design, VLSI Systems and Electronic Design Automation.
+I am Siying Yu (余思颖), a first-year Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong (CUHK)](http://www.cuhk.edu.hk/), under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) since fall 2025. 
+Prior to that, I received my B.S. degree in Elecrical Engineering from [University of Illinois at Urbana-Champaign (UIUC)](https://illinois.edu/), and B.Eng. degree in Elecrical Engineering and Automation from [Zhejiang University (ZJU)](https://www.zju.edu.cn/) in 2025.
+My research interests include Computer Architecture, Hardware/Software Co-design and Electronic Design Automation.
 
 
 
 # 🔥 News
-- *2025.06*: &nbsp; Graduated from Zhejiang University! ([photo](images/zju_commencement.jpg))
-- *2025.06*: &nbsp; Graduated from University of Illinois at Urbana-Champaign! ([photo](images/uiuc_commencement.jpg))
-- *2025.05*: &nbsp; Honored to have my undergraduate journey highlighted in a feature article. ([ZJUI-News](https://mp.weixin.qq.com/s/Jj4wU9RhvVGYad-gluZGow))
-
-
-
-# 🎓 Education
-- **Ph.D. in Computer Science and Engineering**, The Chinese University of Hong Kong, Aug/2025 -  
-- **B.Eng. in Electrical Engineering and Automation**, Zhejiang University, Sep/2021 - Jul/2025  
-- **B.S. in Electrical Engineering**, Minor in Computer Science, University of Illinois at Urbana-Champaign, Aug/2021 - May/2025  
+- Jun/2025: &nbsp; Graduated from University of Illinois at Urbana-Champaign ([photo](images/uiuc_commencement.jpg)) and Zhejiang University ([photo](images/zju_commencement.jpg)).
+- May/2025: &nbsp; Honored to have my undergraduate journey highlighted in a feature article. ([ZJUI-News](https://mp.weixin.qq.com/s/Jj4wU9RhvVGYad-gluZGow))
 
 
 
 # 📝 Publications 
 - [C1] Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu, “GPU Acceleration for Versatile Buffer Insertion”, IEEE/ACM International Conference on Computer-Aided Design (ICCAD), Munich, Oct. 26–30, 2025.
 
+
+
+# 🎓 Education
+- **Ph.D. in Computer Science and Engineering**, The Chinese University of Hong Kong, Aug/2025 -
+- **B.Eng. in Electrical Engineering and Automation**, Zhejiang University, Sep/2021 - Jul/2025  
+- **B.S. in Electrical Engineering, Minor in Computer Science**, University of Illinois at Urbana-Champaign, Aug/2021 - May/2025  
 
 
 
