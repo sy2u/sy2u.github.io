@@ -10,13 +10,15 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-I am Siying Yu (余思颖), a first-year Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong (CUHK)](http://www.cuhk.edu.hk/), under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) since fall 2025. 
-Prior to that, I received my B.S. degree in Elecrical Engineering from [University of Illinois at Urbana-Champaign (UIUC)](https://illinois.edu/), and B.Eng. degree in Elecrical Engineering and Automation from [Zhejiang University (ZJU)](https://www.zju.edu.cn/) in 2025.
+I am a first-year Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong (CUHK)](http://www.cuhk.edu.hk/), under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) since Fall 2025. 
+Prior to that, I obtained my B.S. and B.Eng. degree in Electrical Engineering from [University of Illinois at Urbana-Champaign (UIUC)](https://illinois.edu/) and [Zhejiang University (ZJU)](https://www.zju.edu.cn/) in 2025.
+
 My research interests include Computer Architecture, Hardware/Software Co-design and Electronic Design Automation.
 
 
 
 # 🔥 News
+<!-- - Aug/2025: &nbsp; Started my Ph.D. study at CUHK. -->
 - Jun/2025: &nbsp; Graduated from University of Illinois at Urbana-Champaign ([photo](images/uiuc_commencement.jpg)) and Zhejiang University ([photo](images/zju_commencement.jpg)).
 - May/2025: &nbsp; Honored to have my undergraduate journey highlighted in a feature article. ([ZJUI-News](https://mp.weixin.qq.com/s/Jj4wU9RhvVGYad-gluZGow))
 
@@ -28,7 +30,7 @@ My research interests include Computer Architecture, Hardware/Software Co-design
 
 
 # 🎓 Education
-- **Ph.D. in Computer Science and Engineering**, The Chinese University of Hong Kong, Aug/2025 -
+- **Ph.D. in Computer Science and Engineering**, The Chinese University of Hong Kong, Aug/2025 - Present
 - **B.Eng. in Electrical Engineering and Automation**, Zhejiang University, Sep/2021 - Jul/2025  
 - **B.S. in Electrical Engineering, Minor in Computer Science**, University of Illinois at Urbana-Champaign, Aug/2021 - May/2025  
 

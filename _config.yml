@@ -21,14 +21,14 @@ baidu_site_verification  :  # get baidu_site_verification from https://ziyuan.ba
 
 # Site Author
 author:
-  name             : "Siying Yu"
+  name             : "Siying Yu (余思颖)"
   avatar           : "images/headshot_sqare.jpg"
   bio              : "Ph.D. Student @CUHK CSE"
-  location         : "Hong Kong"
+  location         : "Hong Kong SAR"
   employer         :
   pubmed           : 
   googlescholar    : 
-  email            : "siyingyu3@gmail.com"
+  email            : "siyingyu3@gmail.com" #"syyu25@cse.cuhk.edu.hk" 
   researchgate     :  # e.g., "https://www.researchgate.net/profile/yourprofile"
   uri              :
   bitbucket        :
