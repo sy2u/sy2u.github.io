@@ -10,15 +10,15 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-I am a first-year Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong (CUHK)](http://www.cuhk.edu.hk/), under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) since Fall 2025. 
-Prior to that, I obtained my B.S. and B.Eng. degree in Electrical Engineering from [University of Illinois Urbana-Champaign (UIUC)](https://illinois.edu/) and [Zhejiang University (ZJU)](https://www.zju.edu.cn/) in 2025.
+I am a first-year Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong (CUHK)](http://www.cuhk.edu.hk/), under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) since Fall 2025.
+<!-- Additionally, I am fortunate to collaborate with [Prof. Zhengrong Wang](https://seanzw.github.io). -->
+Prior to that, I obtained my B.S. and B.Eng. degrees in Electrical Engineering from [University of Illinois Urbana-Champaign (UIUC)](https://illinois.edu/) and [Zhejiang University (ZJU)](https://www.zju.edu.cn/) in 2025.
 
 My research interests include Computer Architecture, Hardware/Software Co-design and Electronic Design Automation.
 
 
 
 # 🔥 News
-<!-- - Aug/2025: &nbsp; Started my Ph.D. study at CUHK. -->
 - Jun/2025: &nbsp; Graduated from University of Illinois Urbana-Champaign ([photo](images/uiuc_commencement.jpg)) and Zhejiang University ([photo](images/zju_commencement.jpg)).
 - May/2025: &nbsp; Honored to have my undergraduate journey highlighted in a feature article. ([ZJUI-News](https://mp.weixin.qq.com/s/Jj4wU9RhvVGYad-gluZGow))
 
@@ -45,15 +45,18 @@ My research interests include Computer Architecture, Hardware/Software Co-design
 
 
 # 📖 Teaching
-- [ECE 120: Introduction to Computing](https://ece.illinois.edu/academics/courses/ece120) with 
-  [Prof. Ujjal Bhowmik](https://ece.illinois.edu/about/directory/faculty/ubhowmik), 
-  [Prof. Zuozhu Liu](https://person.zju.edu.cn/en/lzz) and [Prof. Lin Qiu](https://person.zju.edu.cn/en/H122003)
+- [ENGG 1110: Problem Solving by Programming](https://www.cse.cuhk.edu.hk/wp-content/uploads/academics/ug/Courses/ENGG1110.pdf) 
+  @CUHK CSE, Fall 2025
+
+- [ECE 120: Introduction to Computing](https://ece.illinois.edu/academics/courses/ece120) 
+  <!-- with [Prof. Ujjal Bhowmik](https://ece.illinois.edu/about/directory/faculty/ubhowmik), 
+  [Prof. Zuozhu Liu](https://person.zju.edu.cn/en/lzz) and [Prof. Lin Qiu](https://person.zju.edu.cn/en/H122003) -->
   @ZJU-UIUC, Fall 2024
 
-- [ECE 462: Logic Synthesis](https://ece.illinois.edu/academics/courses/ece462) with 
-  [Prof. Anu Aggarwal](https://ece.illinois.edu/about/directory/faculty/agganu)
-  @UIUC, Summer 2024
+- [ECE 462: Logic Synthesis](https://ece.illinois.edu/academics/courses/ece462) 
+  <!-- with [Prof. Anu Aggarwal](https://ece.illinois.edu/about/directory/faculty/agganu) -->
+  @UIUC ECE, Summer 2024
 
-- [RHET 101/102: Principles of Writing/Research](http://catalog.illinois.edu/courses-of-instruction/rhet/) with 
-  [Prof. Mary Hays](https://english.illinois.edu/directory/profile/maryhays)
-  @ZJU-UIUC, Fall 2022 / Spring 2023
+- [RHET 101/102: Principles of Writing/Research](http://catalog.illinois.edu/courses-of-instruction/rhet/) 
+  <!-- with [Prof. Mary Hays](https://english.illinois.edu/directory/profile/maryhays) -->
+  @ZJU-UIUC, Fall 2022, Spring 2023
