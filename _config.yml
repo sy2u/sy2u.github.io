@@ -27,7 +27,7 @@ author:
   location         : "Hong Kong SAR"
   employer         :
   pubmed           : 
-  googlescholar    : 
+  googlescholar    : https://scholar.google.com/citations?user=9uIhWQEAAAAJ
   email            : "siyingyu3@gmail.com" #"syyu25@cse.cuhk.edu.hk" 
   researchgate     :  # e.g., "https://www.researchgate.net/profile/yourprofile"
   uri              :
@@ -65,7 +65,6 @@ include:
   - _pages
   - files
 exclude:
-  - docs
   - google_scholar_crawler
   - "*.sublime-project"
   - "*.sublime-workspace"

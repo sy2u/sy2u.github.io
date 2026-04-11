@@ -10,11 +10,10 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-I am a first-year Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong (CUHK)](http://www.cuhk.edu.hk/), under the supervision of [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) since Fall 2025.
-<!-- Additionally, I am fortunate to collaborate with [Prof. Zhengrong Wang](https://seanzw.github.io). -->
-Prior to that, I obtained my B.S. and B.Eng. degrees in Electrical Engineering from [University of Illinois Urbana-Champaign (UIUC)](https://illinois.edu/) and [Zhejiang University (ZJU)](https://www.zju.edu.cn/) in 2025.
+I am a first-year Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong](http://www.cuhk.edu.hk/), supervised by [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) and [Prof. Zhengrong Wang](https://seanzw.github.io) since Fall 2025.
+Prior to that, I obtained my B.S. from [Department of Electrical and Computer Engineering](https://ece.illinois.edu/) in [The Grainger College of Engineering](https://grainger.illinois.edu/) at [University of Illinois Urbana-Champaign](https://illinois.edu/), and my B.E. from [Zhejiang University](https://www.zju.edu.cn/) in 2025.
 
-My research interests include Computer Architecture, Hardware/Software Co-design and Electronic Design Automation.
+My research interests include Computer Architecture and Electronic Design Automation.
 
 
 
@@ -25,14 +24,14 @@ My research interests include Computer Architecture, Hardware/Software Co-design
 
 
 # 📝 Publications 
-- [C1] Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu, “GPU Acceleration for Versatile Buffer Insertion”, IEEE/ACM International Conference on Computer-Aided Design (ICCAD), Munich, Oct. 26–30, 2025.
-
+- [C1] Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu, “[GPU Acceleration for Versatile Buffer Insertion](https://ieeexplore.ieee.org/document/11240837)”, IEEE/ACM International Conference on Computer-Aided Design (ICCAD), Munich, Oct. 26–30, 2025. 
+([paper](docs/ICCAD2025-BIGX.pdf))
 
 
 # 🎓 Education
 - **Ph.D. in Computer Science and Engineering**, The Chinese University of Hong Kong, Aug/2025 - Present
-- **B.Eng. in Electrical Engineering and Automation**, Zhejiang University, Sep/2021 - Jul/2025  
-- **B.S. in Electrical Engineering, Minor in Computer Science**, University of Illinois Urbana-Champaign, Aug/2021 - May/2025  
+- **B.E. in Electrical Engineering and Automation**, Zhejiang University, Sep/2021 - Jul/2025  
+- **B.S. in Electrical Engineering**, **Minor in Computer Science**, University of Illinois Urbana-Champaign, Aug/2021 - May/2025  
 
 
 
