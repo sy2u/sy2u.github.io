@@ -23,20 +23,41 @@ My research interests include Computer Architecture and Electronic Design Automa
 
 
 # 🔥 News
+- Jul/2026: &nbsp; 🎉🎉 Our work FlashGPU-sim is accepted by MICRO 2026!
 - Jun/2025: &nbsp; Graduated from University of Illinois Urbana-Champaign ([photo](images/uiuc_commencement.jpg)) and Zhejiang University ([photo](images/zju_commencement.jpg)).
 - May/2025: &nbsp; Honored to have my undergraduate journey highlighted in a feature article. ([ZJUI-News](https://mp.weixin.qq.com/s/Jj4wU9RhvVGYad-gluZGow))
 
 
 
 # 📝 Publications 
-- [C1] Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu, “[GPU Acceleration for Versatile Buffer Insertion](https://ieeexplore.ieee.org/document/11240837)”, IEEE/ACM International Conference on Computer-Aided Design (ICCAD), Munich, Oct. 26–30, 2025. 
+- [C2] **Siying Yu**, Yixun Hong, Guozhi Qiu, Feng Gu, Chenbo Geng, Zhengrong Wang, Chen Zhang, Bei Yu, "FlashGPU-sim: Enabling GPU Modeling for Modern Architectures
+and AI Workloads", IEEE/ACM International Symposium on Microarchitecture (**MICRO**), Athens, Oct. 31-Nov. 04, 2026.
+- [C1] Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu, “[GPU Acceleration for Versatile Buffer Insertion](https://ieeexplore.ieee.org/document/11240837)”, IEEE/ACM International Conference on Computer-Aided Design (**ICCAD**), Munich, Oct. 26–30, 2025. 
 ([paper](docs/ICCAD2025-BIGX.pdf))
+
 
 
 # 🎓 Education
 - **Ph.D. in Computer Science and Engineering**, The Chinese University of Hong Kong, Aug/2025 - Present
 - **B.E. in Electrical Engineering and Automation**, Zhejiang University, Sep/2021 - Jul/2025  
 - **B.S. in Electrical Engineering**, **Minor in Computer Science**, University of Illinois Urbana-Champaign, Aug/2021 - May/2025  
+
+
+
+# 🛠️ Experiences
+- Research Intern, Processor Technology Lab, Huawei Hong Kong Research Center (HKRC), Jun/2026 - Present 
+
+- Teaching Assistant, [ENGG 1110: Problem Solving by Programming](https://www.cse.cuhk.edu.hk/wp-content/uploads/academics/ug/Courses/ENGG1110.pdf) 
+  @CUHK CSE, Fall 2025
+
+- Head Teaching Assistant, [ECE 120: Introduction to Computing](https://ece.illinois.edu/academics/courses/ece120) 
+  @ZJU-UIUC, Fall 2024
+
+- Course Assistant, [ECE 462: Logic Synthesis](https://ece.illinois.edu/academics/courses/ece462) 
+  @UIUC ECE, Summer 2024
+
+- Writing Assistant, [RHET 101/102: Principles of Writing/Research](http://catalog.illinois.edu/courses-of-instruction/rhet/) 
+  @ZJU-UIUC, Fall 2022, Spring 2023
 
 
 
@@ -47,20 +68,3 @@ My research interests include Computer Architecture and Electronic Design Automa
 - Zhejiang Provincial Government Scholarship, Department of Education of Zhejiang Province, 2022-2023
 
 
-
-# 📖 Teaching
-- [ENGG 1110: Problem Solving by Programming](https://www.cse.cuhk.edu.hk/wp-content/uploads/academics/ug/Courses/ENGG1110.pdf) 
-  @CUHK CSE, Fall 2025
-
-- [ECE 120: Introduction to Computing](https://ece.illinois.edu/academics/courses/ece120) 
-  <!-- with [Prof. Ujjal Bhowmik](https://ece.illinois.edu/about/directory/faculty/ubhowmik), 
-  [Prof. Zuozhu Liu](https://person.zju.edu.cn/en/lzz) and [Prof. Lin Qiu](https://person.zju.edu.cn/en/H122003) -->
-  @ZJU-UIUC, Fall 2024
-
-- [ECE 462: Logic Synthesis](https://ece.illinois.edu/academics/courses/ece462) 
-  <!-- with [Prof. Anu Aggarwal](https://ece.illinois.edu/about/directory/faculty/agganu) -->
-  @UIUC ECE, Summer 2024
-
-- [RHET 101/102: Principles of Writing/Research](http://catalog.illinois.edu/courses-of-instruction/rhet/) 
-  <!-- with [Prof. Mary Hays](https://english.illinois.edu/directory/profile/maryhays) -->
-  @ZJU-UIUC, Fall 2022, Spring 2023
