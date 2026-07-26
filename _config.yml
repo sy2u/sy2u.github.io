@@ -23,7 +23,7 @@ baidu_site_verification  :  # get baidu_site_verification from https://ziyuan.ba
 author:
   name             : "Siying Yu (余思颖)"
   avatar           : "images/headshot_sqare.jpg"
-  bio              : "Ph.D. Student @CUHK CSE"
+  bio              : "Ph.D. Student @ CUHK CSE"
   location         : "Hong Kong SAR"
   employer         :
   pubmed           : 
@@ -44,8 +44,8 @@ author:
   impactstory      : # e.g., "https://profiles.impactstory.org/u/xxxx-xxxx-xxxx-xxxx"
   lastfm           :
   linkedin         : # e.g., "linkedin username"
-  dblp             : # e.g., "https://dblp.org/pid/xx/xxxx.html"
-  orcid            : # e.g., "https://orcid.org/xxxx"
+  dblp             : https://dblp.org/pid/422/5228.html
+  orcid            : https://orcid.org/0009-0009-1702-087X
   pinterest        :
   soundcloud       :
   stackoverflow    : # http://stackoverflow.com/users/123456/username

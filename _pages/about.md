@@ -10,9 +10,8 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-I am a first-year Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong](http://www.cuhk.edu.hk/), 
-supervised by [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) since Fall 2025, 
-while also mentored by [Prof. Zhengrong Wang](https://seanzw.github.io).
+I have been a Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong](http://www.cuhk.edu.hk/) since Fall 2025, 
+working with [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) and [Prof. Zhengrong Wang](https://seanzw.github.io).
 Prior to that, I obtained my B.S. from the [Department of Electrical and Computer Engineering](https://ece.illinois.edu/) 
 <!-- in [The Grainger College of Engineering](https://grainger.illinois.edu/)  -->
 at [University of Illinois Urbana-Champaign](https://illinois.edu/), 
@@ -30,11 +29,11 @@ My research interests include Computer Architecture and Electronic Design Automa
 
 
 # 📝 Publications 
-### ▸ GPU Architecture & Performance Modeling
+### GPU Architecture & Performance Modeling
 - [C2] **Siying Yu**, Yixun Hong, Guozhi Qiu, Feng Gu, Chenbo Geng, Zhengrong Wang, Chen Zhang, Bei Yu, "FlashGPU-sim: Enabling GPU Modeling for Modern Architectures and AI Workloads", IEEE/ACM International Symposium on Microarchitecture (**MICRO**), Athens, Oct. 31-Nov. 04, 2026.
 
-### ▸ Design Automation & 3D Integration
-- [C3] Yuhao Ji, **Siying Yu**, Yunqi Shi, Fangzhou Liu, Yuxuan Zhao, Jiaxi Jiang, Zizheng Guo, Chao Qian, Yibo Lin, Bei Yu, "HeteroOpt3D: Timing Optimization for Heterogeneous Hybrid-bonding-based Face-to-Face 3D ICs", IEEE/ACM International Conference on Computer-Aided Design (**ICCAD**), San Jose, Nov. 8-12, 2026.
+### Design Automation & 3D Integration
+- [C3] Yuhao Ji, **Siying Yu**, Yunqi Shi, Fangzhou Liu, Yuxuan Zhao, Jiaxi Jiang, Zizheng Guo, Chao Qian, Yibo Lin, Bei Yu, "HeteroOpt3D: Timing Optimization for Heterogeneous Hybrid-bonding-based Face-to-Face 3D ICs", IEEE/ACM International Conference on Computer-Aided Design (**ICCAD**), San Jose, Nov. 08-12, 2026.
 - [C1] Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu, “[GPU Acceleration for Versatile Buffer Insertion](https://ieeexplore.ieee.org/document/11240837)”, IEEE/ACM International Conference on Computer-Aided Design (**ICCAD**), Munich, Oct. 26–30, 2025. 
 ([paper](docs/ICCAD2025-BIGX.pdf))
 
@@ -49,7 +48,7 @@ My research interests include Computer Architecture and Electronic Design Automa
 
 # 🛠️ Experiences
 {: #experiences}
-- Research Intern, Processor Technology Lab, Huawei Hong Kong Research Center (HKRC), Jun/2026 - Present 
+- Research Intern, Processor Technology Lab, Huawei Leibniz Research Center, Jun/2026 - Present 
 
 - Teaching Assistant, [ENGG 1110: Problem Solving by Programming](https://www.cse.cuhk.edu.hk/wp-content/uploads/academics/ug/Courses/ENGG1110.pdf) 
   @CUHK CSE, Fall 2025
