@@ -10,7 +10,7 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-I have been a Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong](http://www.cuhk.edu.hk/) since Fall 2025, 
+I am a second-year Ph.D. student at the [Department of Computer Science and Engineering](https://www.cse.cuhk.edu.hk/), [The Chinese University of Hong Kong](http://www.cuhk.edu.hk/), 
 working with [Prof. Bei Yu](https://www.cse.cuhk.edu.hk/~byu/) and [Prof. Zhengrong Wang](https://seanzw.github.io).
 Prior to that, I obtained my B.S. from the [Department of Electrical and Computer Engineering](https://ece.illinois.edu/) 
 <!-- in [The Grainger College of Engineering](https://grainger.illinois.edu/)  -->
@@ -29,14 +29,20 @@ My research interests include Computer Architecture and Electronic Design Automa
 
 
 # 📝 Publications 
-### GPU Architecture & Performance Modeling
-- [C2] **Siying Yu**, Yixun Hong, Guozhi Qiu, Feng Gu, Chenbo Geng, Zhengrong Wang, Chen Zhang, Bei Yu, "FlashGPU-sim: Enabling GPU Modeling for Modern Architectures and AI Workloads", IEEE/ACM International Symposium on Microarchitecture (**MICRO**), Athens, Oct. 31-Nov. 04, 2026.
+### First-Authored
+- [C2] FlashGPU-sim: Enabling GPU Modeling for Modern Architectures and AI Workloads  
+  **Siying Yu**, Yixun Hong, Guozhi Qiu, Feng Gu, Chenbo Geng, Zhengrong Wang, Chen Zhang, Bei Yu  
+  2026 IEEE/ACM 59th International Symposium on Microarchitecture (**MICRO**)  
+  <a class="github-repo-link" href="https://github.com/FlashGPU-Sim/FlashGPU-Sim" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i><span>FlashGPU-Sim</span></a>
 
-### Design Automation & 3D Integration
-- [C3] Yuhao Ji, **Siying Yu**, Yunqi Shi, Fangzhou Liu, Yuxuan Zhao, Jiaxi Jiang, Zizheng Guo, Chao Qian, Yibo Lin, Bei Yu, "HeteroOpt3D: Timing Optimization for Heterogeneous Hybrid-bonding-based Face-to-Face 3D ICs", IEEE/ACM International Conference on Computer-Aided Design (**ICCAD**), San Jose, Nov. 08-12, 2026.
-- [C1] Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu, “[GPU Acceleration for Versatile Buffer Insertion](https://ieeexplore.ieee.org/document/11240837)”, IEEE/ACM International Conference on Computer-Aided Design (**ICCAD**), Munich, Oct. 26–30, 2025. 
-([paper](docs/ICCAD2025-BIGX.pdf))
+### Co-Authored
+- [C3] HeteroOpt3D: Timing Optimization for Heterogeneous Hybrid-bonding-based Face-to-Face 3D ICs  
+  Yuhao Ji, **Siying Yu**, Yunqi Shi, Fangzhou Liu, Yuxuan Zhao, Jiaxi Jiang, Zizheng Guo, Chao Qian, Yibo Lin, Bei Yu   
+  2026 IEEE/ACM 46th International Conference on Computer-Aided Design (**ICCAD**)
 
+- [C1] [GPU Acceleration for Versatile Buffer Insertion](https://ieeexplore.ieee.org/document/11240837) ([pdf](docs/ICCAD2025-BIGX.pdf))  
+  Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu  
+  2025 IEEE/ACM 45th International Conference on Computer-Aided Design (**ICCAD**)  
 
 
 # 🎓 Education
@@ -63,11 +69,16 @@ My research interests include Computer Architecture and Electronic Design Automa
   @ZJU-UIUC, Fall 2022, Spring 2023
 
 
+# 📖 Academic Services
+- Program committee Member: <!--  MICRO 2026 Artifact Evaluation -->
+  - [2026 ACM/IEEE 59th International Symposium on Microarchitecture (MICRO) Artifact Evaluation](https://www.microarch.org/micro59/submit/artifacts.php) 
+- External Reviewer: 
+  - ASPDAC 2026, DAC 2026, FPL 2026, ICCAD 2026, ICCD 2026
+
 
 # 🌟 Selected Awards
 - Postgraduate Studentship, The Chinese University of Hong Kong, 2025-2029
 - Outstanding Graduate,  Zhejiang University / Department of Education of Zhejiang Province, 2025
 - Perry, H. & R. Scholarship, University of Illinois Urbana-Champaign, 2024
 - Zhejiang Provincial Government Scholarship, Department of Education of Zhejiang Province, 2022-2023
-
 
