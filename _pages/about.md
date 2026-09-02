@@ -33,7 +33,7 @@ My research interests include Computer Architecture and Electronic Design Automa
 - [C2] FlashGPU-sim: Enabling GPU Modeling for Modern Architectures and AI Workloads  
   **Siying Yu**, Yixun Hong, Guozhi Qiu, Feng Gu, Chenbo Geng, Zhengrong Wang, Chen Zhang, Bei Yu  
   2026 IEEE/ACM 59th International Symposium on Microarchitecture (**MICRO**)  
-  <a class="github-repo-link" href="https://github.com/FlashGPU-Sim/FlashGPU-Sim" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i><span>FlashGPU-Sim</span></a>
+  <span class="publication-links" aria-label="FlashGPU-Sim links and artifact badges"><a class="artifact-badge" href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener noreferrer" title="ACM Artifacts Available"><img src="{{ '/images/badges/acm-artifacts-available.png' | relative_url }}" alt="ACM Artifacts Available badge"></a><a class="artifact-badge" href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener noreferrer" title="ACM Artifacts Evaluated — Functional"><img src="{{ '/images/badges/acm-artifacts-evaluated-functional.png' | relative_url }}" alt="ACM Artifacts Evaluated — Functional badge"></a><a class="artifact-badge" href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener noreferrer" title="ACM Results Reproduced"><img src="{{ '/images/badges/acm-results-reproduced.png' | relative_url }}" alt="ACM Results Reproduced badge"></a><a class="github-repo-link" href="https://github.com/FlashGPU-Sim/FlashGPU-Sim" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i><span>FlashGPU-Sim</span></a></span>
 
 ### Co-Authored
 - [C3] HeteroOpt3D: Timing Optimization for Heterogeneous Hybrid-bonding-based Face-to-Face 3D ICs  
@@ -43,6 +43,7 @@ My research interests include Computer Architecture and Electronic Design Automa
 - [C1] [GPU Acceleration for Versatile Buffer Insertion](https://ieeexplore.ieee.org/document/11240837) ([pdf](docs/ICCAD2025-BIGX.pdf))  
   Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu  
   2025 IEEE/ACM 45th International Conference on Computer-Aided Design (**ICCAD**)  
+
 
 
 # 🎓 Education
@@ -69,11 +70,13 @@ My research interests include Computer Architecture and Electronic Design Automa
   @ZJU-UIUC, Fall 2022, Spring 2023
 
 
+
 # 📖 Academic Services
-- Program committee Member: <!--  MICRO 2026 Artifact Evaluation -->
-  - [2026 ACM/IEEE 59th International Symposium on Microarchitecture (MICRO) Artifact Evaluation](https://www.microarch.org/micro59/submit/artifacts.php) 
+- Program committee Member: 
+  - [MICRO 2026 Artifact Evaluation](https://www.microarch.org/micro59/submit/artifacts.php) 
 - External Reviewer: 
-  - ASPDAC 2026, DAC 2026, FPL 2026, ICCAD 2026, ICCD 2026
+  - ASPDAC 2026, DAC 2026, FPL 2026, ICCAD 2026, ICCD 2026, HPCA 2027
+
 
 
 # 🌟 Selected Awards
@@ -81,4 +84,3 @@ My research interests include Computer Architecture and Electronic Design Automa
 - Outstanding Graduate,  Zhejiang University / Department of Education of Zhejiang Province, 2025
 - Perry, H. & R. Scholarship, University of Illinois Urbana-Champaign, 2024
 - Zhejiang Provincial Government Scholarship, Department of Education of Zhejiang Province, 2022-2023
-
