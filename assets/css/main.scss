@@ -148,36 +148,53 @@ h1:before, .anchor:before {
     }
 }
 
-.page__content .publication-links {
+.page__content .repository-link {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 2px;
-    margin-top: 2px;
+    margin-top: 0;
 
     .github-repo-link {
+        height: 24px;
         margin-top: 0;
-        margin-left: 4px;
+        padding: 0 4px 0 4px;
+        font-size: 12px;
+        line-height: 22px;
+
+        .fa-github {
+            font-size: 15px;
+            line-height: 15px;
+        }
     }
 
-    .artifact-badge {
-        display: inline-flex;
-        border-radius: 50%;
-        line-height: 0;
-        text-decoration: none;
+}
 
-        img {
-            width: 26px;
-            height: 26px;
-        }
+.page__content .artifact-badges-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: 4px;
+    vertical-align: middle;
+}
 
-        &:hover img {
-            box-shadow: none;
-        }
+.page__content .artifact-badge {
+    display: inline-flex;
+    border-radius: 50%;
+    line-height: 0;
+    text-decoration: none;
 
-        &:focus-visible {
-            outline: 2px solid #0969da;
-            outline-offset: 2px;
-        }
+    img {
+        width: 26px;
+        height: 26px;
+    }
+
+    &:hover img {
+        box-shadow: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #0969da;
+        outline-offset: 2px;
     }
 }
