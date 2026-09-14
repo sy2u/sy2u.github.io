@@ -30,10 +30,10 @@ My research interests include Computer Architecture and Electronic Design Automa
 
 # 📝 Publications 
 ### First-Authored
-- [C2] FlashGPU-sim: Enabling GPU Modeling for Modern Architectures and AI Workloads  
-  **Siying Yu**, Yixun Hong, Guozhi Qiu, Feng Gu, Chenbo Geng, Zhengrong Wang, Chen Zhang, Bei Yu  
+- [C2] FlashGPU-sim: Enabling GPU Modeling for Modern Architectures and AI Workloads ([pdf](docs/MICRO2026-FlashGPU-sim.pdf))  
+  **Siying Yu**, Yixun Hong, Guozhi Qiu, Jingci Liu, Feng Gu, Chenbo Geng, Zhengrong Wang, Chen Zhang, Bei Yu  
   2026 IEEE/ACM 59th International Symposium on Microarchitecture (**MICRO**) <span class="artifact-badges-inline" aria-label="FlashGPU-Sim artifact badges"><a class="artifact-badge" href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener noreferrer" title="ACM Artifacts Available"><img src="{{ '/images/badges/acm-artifacts-available.png' | relative_url }}" alt="ACM Artifacts Available badge"></a><a class="artifact-badge" href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener noreferrer" title="ACM Artifacts Evaluated — Functional"><img src="{{ '/images/badges/acm-artifacts-evaluated-functional.png' | relative_url }}" alt="ACM Artifacts Evaluated — Functional badge"></a><a class="artifact-badge" href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener noreferrer" title="ACM Results Reproduced"><img src="{{ '/images/badges/acm-results-reproduced.png' | relative_url }}" alt="ACM Results Reproduced badge"></a></span>  
-  <span class="repository-link" aria-label="FlashGPU-Sim repository link"><a class="github-repo-link" href="https://github.com/FlashGPU-Sim/FlashGPU-Sim" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i><span>FlashGPU-Sim</span></a></span>
+  <span class="repository-link" aria-label="FlashGPU-Sim repository link"><a class="github-repo-link" href="https://github.com/FlashGPU-Sim/FlashGPU-Sim" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i><span>Simulator</span></a></span>
 
 ### Co-Authored
 - [C3] HeteroOpt3D: Timing Optimization for Heterogeneous Hybrid-bonding-based Face-to-Face 3D ICs  
