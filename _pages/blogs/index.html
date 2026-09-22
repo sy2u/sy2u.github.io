@@ -1,0 +1,14 @@
+---
+title: Blogs
+permalink: /blogs/
+blogs_index: true
+---
+
+{% assign blogs = site.pages | where: 'blog', true | where_exp: 'blog', 'blog.published != false' | sort: 'title' %}
+<ul>
+  {% for blog in blogs %}
+    <li>
+      <strong><a href="{{ blog.url | relative_url }}" target="_self">{{ blog.title | escape }}</a></strong>
+    </li>
+  {% endfor %}
+</ul>

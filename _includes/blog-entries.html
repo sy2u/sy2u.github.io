@@ -1,0 +1,13 @@
+{% assign notes = site.pages | where: 'blog_entry', true | where: 'blog_category', include.category | where_exp: 'note', 'note.published != false' | sort: 'date' | reverse %}
+{% if notes.size > 0 %}
+  <ul>
+    {% for note in notes %}
+      <li>
+        <strong><a href="{{ note.url | relative_url }}" target="_self">{{ note.title | escape }}</a></strong>
+        {% if note.listing_summary %}<br>{{ note.listing_summary | escape }}{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>还没有阅读笔记。</p>
+{% endif %}

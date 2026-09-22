@@ -3,3 +3,4 @@ _site/
 vendor/bundle/
 push.sh
 .DS_Store
+/blogs/local/

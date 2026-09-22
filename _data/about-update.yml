@@ -1,0 +1,3 @@
+# Offline fallback: latest known commit touching _pages/about.md.
+# The footer refreshes this from the path-filtered GitHub commit history.
+date: "2026-09-14"

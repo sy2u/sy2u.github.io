@@ -40,6 +40,13 @@
 @import "vendor/magnific-popup/magnific-popup";
 @import "print";
 
+.page--blog {
+    float: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 .paper-box {
     display: flex;
     justify-content: left;
@@ -197,4 +204,49 @@ h1:before, .anchor:before {
         outline: 2px solid #0969da;
         outline-offset: 2px;
     }
+}
+
+.page--blog .blog-meta {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.page--blog .blog-disclaimer {
+    color: #6b7280;
+    font-size: 0.85em;
+    line-height: 1.6;
+    margin-bottom: 1.5em;
+}
+
+.page--blog figure {
+    display: block;
+    max-width: 52rem;
+    margin: 1.5em auto;
+
+    &.reading-wide { max-width: 100%; }
+    a { display: block; }
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        border-radius: 0;
+    }
+    a:hover img { box-shadow: none; }
+    figcaption {
+        width: 100%;
+        margin-top: 0.6em;
+        line-height: 1.5;
+        text-align: center;
+    }
+}
+
+.page--blog .reading-table { overflow-x: auto; }
+
+.page--blog .section-source {
+    margin-top: -0.5em;
+    margin-bottom: 1em;
+    color: #6b7280;
+    font-size: 0.8em;
+    line-height: 1.5;
 }

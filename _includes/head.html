@@ -11,9 +11,12 @@
 </script>
 
 <!-- For all browsers -->
-<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
 
 <meta http-equiv="cleartype" content="on">
-<head>
+{% if page.layout == 'blog' %}
+  <meta name="robots" content="noindex, nofollow, noimageindex">
+  <meta name="referrer" content="no-referrer">
+{% else %}
   <base target="_blank">
-</head>
+{% endif %}

@@ -1,0 +1,23 @@
+---
+layout: default
+---
+
+{% unless page.blogs_index %}
+<p>
+  <a href="{{ '/blogs/' | relative_url }}" target="_self">Blogs</a>
+  {% if page.blog_entry %}
+    {% assign category = site.pages | where: 'blog', true | where: 'blog_key', page.blog_category | first %}
+    {% if category %}/ <a href="{{ category.url | relative_url }}" target="_self">{{ category.title | escape }}</a>{% endif %}
+  {% endif %}
+</p>
+{% endunless %}
+
+<h1>{{ page.title | escape }}</h1>
+{% if page.blog_entry or page.paper_url %}
+  <p class="blog-meta">
+    {% if page.blog_entry %}<time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: '%Y-%m-%d' }}</time>{% endif %}
+    {% if page.paper_url %}{% if page.blog_entry %} · {% endif %}<a href="{{ page.paper_url | escape }}" target="_blank" rel="noopener noreferrer">论文原文</a>{% endif %}
+  </p>
+{% endif %}
+
+{{ content }}

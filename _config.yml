@@ -65,6 +65,7 @@ include:
   - _pages
   - files
 exclude:
+  - blogs/README.md
   - google_scholar_crawler
   - "*.sublime-project"
   - "*.sublime-workspace"
@@ -125,6 +126,21 @@ defaults:
     values:
       layout: default
       author_profile: true
+  - scope:
+      path: "_pages/blogs"
+      type: pages
+    values:
+      layout: blog
+      author_profile: false
+      sitemap: false
+  - scope:
+      path: "blogs"
+      type: pages
+    values:
+      layout: blog
+      author_profile: false
+      sitemap: false
+      blog_entry: true
 
 
 # Sass/SCSS
