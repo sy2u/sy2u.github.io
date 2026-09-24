@@ -3,64 +3,51 @@ title: "Dissecting How Die Scaling Breaks GPU Fine-grained Scheduling"
 date: 2026-09-22
 published: true
 blog_category: paper-reading
-listing_summary: "测出 GPU 内部的 SM 拓扑差异与 NUMA 访存特性，解释它们如何影响大模型推理、资源划分和多租户调度。"
+listing_summary: "用 cluster、带宽和延迟微基准还原 GPU 拓扑，理解数据本地性、负载均衡与 cluster 碎片如何影响调度。"
 paper_url: https://arxiv.org/abs/2609.24270v1
 ---
 
 <p class="blog-disclaimer">本文依据所提供的 PDF 作 AI 辅助阅读整理，未独立复现实验。</p>
 
-<p>这篇论文研究<strong>GPU 内部的计算拓扑和访存差异如何影响细粒度调度</strong>。随着芯片变大、内部互连变复杂，以及多芯粒 GPU 的出现，SM 所在的位置、哪些 TPC 被禁用、数据落在哪个内存分区，都会影响最终性能。调度器需要结合这些信息，判断分给任务的资源能提供多少计算能力和访存带宽。</p>
-<p>全文沿着两条线推进：先逆向测出<strong>计算拓扑的不对称</strong>和<strong>访存的非均匀性</strong>，再用整卡 kernel、同一应用的 prefill/decode 并行、多租户共置三个场景，说明调度器为什么需要知道资源的身份与位置。作者分别为这三个场景构建原型，验证硬件差异对性能的影响。</p>
+<p>这篇论文的核心发现是：<strong>分给任务的 SM 位于哪里、能与哪些 SM 协作，会直接影响这份计算资源的实际性能。</strong>在测试的 H200、B200 上，部分 SM 无法参与较大的 thread block cluster，同一 GPC 内剩余的 SM 也可能因凑不齐一个 cluster 而闲置；SM 访问远端内存分区时，还会付出更高的延迟和跨分区带宽代价。因此，调度器需要同时考虑 SM 的分组、cluster 要求与数据位置。</p>
+<p><strong>数据放到本地之后，工作量还要与各分区的计算能力匹配。</strong>论文测到一块 B200 的两个内存分区分别对应 70 和 78 个 SM。如果两侧各承担一半工作，SM 较少的一侧就会拖慢整个任务。按 SM 数量比例分配数据与任务，才能同时获得本地访问和负载均衡的收益。</p>
 
-<h2>§1–4 背景与动机：SM 数量为什么不够描述一块 GPU</h2>
+<h2>§1–4 必要背景：计算分组与内存分区</h2>
 <p class="section-source">PDF p. 1–3</p>
-<h3>先看清 GPU 的两套组织</h3>
 <figure id="figure-1">
   <a href="{{ page.url | append: 'figure-01.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 1 清晰版本">
     <img src="{{ page.url | append: 'figure-01.png' | relative_url }}" alt="图 1：现代 GPU 的计算层次与分区化访存路径" width="960" height="312" loading="lazy" decoding="async">
   </a>
   <figcaption>图 1 · 现代 GPU 的计算层次与分区化访存路径。摘自原论文 PDF 第 1 页。</figcaption>
 </figure>
-<p><strong>读图：</strong>图 1 的上半部分是计算层次：GPU 包含多个 GPC，每个 GPC 又包含多个 TPC，本文讨论的 NVIDIA GPU 每个 TPC 包含两个 SM。下半部分是访存路径：SM 通过互连访问分区化的 L2 和 HBM。计算层次决定哪些 SM 能共同执行一个 cluster；访存路径决定这些 SM 访问各内存分区的代价。调度器需要同时考虑这两类约束。</p>
-<ul>
-<li><strong>Floorsweeping：</strong>为容纳制造缺陷等因素，芯片会禁用部分 TPC。完整设计中的资源数与产品实际启用的资源数因此不同。例如 GH100 完整设计有 144 个 SM，论文的 H200 启用 132 个；B200 的完整配置为 160 个，实际启用 148 个。</li>
-<li><strong>Thread Block Cluster：</strong>一组需要协作的 thread blocks。论文利用其共同落在一个 GPC 内的约束，探测 SM 的归属；较大的 cluster 也会放大资源碎片问题。</li>
-<li><strong>NUMA：</strong>同一个逻辑 GPU 内，某个 SM 访问本地内存分区和远端分区的成本不同。这些差异存在于同一逻辑设备内部。</li>
-<li><strong>Green Context / MPS / MIG：</strong>不同方式的 GPU 资源划分或共享机制。本文关心的是，它们实际交付了哪些 SM，以及这些 SM 的 cluster 能力和内存亲和性。</li>
-</ul>
-<p>禁用单元之后，逻辑 SM ID 会重新组织，因此不能只根据一个连续编号区间，推断其中的 SM 在物理上属于哪个 GPC。即使型号相同，不同芯片的 floorsweeping 位置也可能不同。</p>
-<p>GPU 会将数据分布到不同的内存分区，而 SM 访问这些分区的代价并不相同：访问本地分区较快，访问远端分区则需要经过额外的互连。因此，调度时除了考虑分配多少个 SM，还需要考虑这些 SM 与所访问数据的位置关系。</p>
-<p>已有的 MLOPart 等接口支持 NUMA 相关的资源管理。本文进一步研究<strong>具体芯片的 SM 拓扑、SM—内存亲和性，以及调度和分配怎样共同利用这些信息</strong>。</p>
+<p>图 1 上半部分是计算层次：GPU 包含多个 GPC，每个 GPC 包含多个 TPC，本文的 NVIDIA GPU 每个 TPC 有两个 SM。<strong>Thread Block Cluster</strong> 是一组协作的 thread blocks，需要落在同一个 GPC 中。制造时禁用部分 TPC 的做法称为 <strong>floorsweeping</strong>，它会改变各 GPC 的可用资源数；逻辑 SM 编号也会重新组织，因此需要测出编号对应的物理分组。</p>
+<p>下半部分是访存路径：L2 和 HBM 分成不同的内存亲和分区。一个 SM 访问本地分区较快，访问远端分区要经过额外互连，这就是本文讨论的 GPU 内部 NUMA。后文分别测量“哪些 SM 属于同一 GPC”和“哪些 SM 靠近同一内存分区”。</p>
 
 <h2>§5 计算不对称：如何还原每个 SM 所在的 GPC</h2>
-<p class="section-source">PDF p. 3–6；附录 B，PDF p. 13</p>
+<p class="section-source">PDF p. 3–5</p>
 <h3>§5.1 两阶段探测：先用 cluster 分组，再用共享带宽补全</h3>
-<p><strong>第一阶段：</strong>作者使用 <code>cudaLaunchKernelEx</code> 启动大小为 3–8 的 clusters，并在 kernel 中记录 <code>%smid</code>。同一个 cluster 内的 SM 必须来自同一个 GPC，因此反复采样可以建立 SM 的分组关系。</p>
-<p>第一阶段只能识别参与这些 cluster 的 SM。在论文的一块 H200 上，编号 0–123 的 SM 可以通过这种方式归组，而 124–131 不出现在大小大于 2 的 cluster 中。作者把前一类叫 <strong>normal SM</strong>，后一类叫 <strong>random SM</strong>。这里的 random 指<strong>这些逻辑 SM ID 对应的 GPC 归属随芯片的 floorsweeping 结果而变化</strong>。对一颗给定芯片，SM 的物理位置固定；random SM 的数量则取决于该芯片的配置。</p>
+<p><strong>第一阶段：记录哪些 SM 曾共同执行一个 cluster。</strong>作者使用 <code>cudaLaunchKernelEx</code> 启动包含 3–8 个 thread blocks 的 cluster，让各个 block 读取 <code>%smid</code>，记录自己运行在哪个 SM 上。同一 cluster 的 blocks 必须位于同一个 GPC，因此这次记录到的 SM 可以归为同一组。</p>
+<p>重复采样后，还可以通过共同出现的 SM 合并分组。例如，一次记录到 <code>{a, b, c}</code>，另一次记录到 <code>{c, d, e}</code>，两次都有 SM c，就能判断 a、b、c、d、e 属于同一个 GPC。在测试的一块 H200 上，这种方法确定了 SM 0–123 的 GPC 归属。SM 124–131 未出现在 size 3–8 的 cluster 中，作者随后通过共享互连上的带宽争用确定它们的归属。</p>
+<p>作者将这些 SM 分为 <strong>normal SM</strong> 和 <strong>random SM</strong>。normal SM 的逻辑编号遵循该架构预先定义的 GPC 映射：哪些 SM ID 属于同一个 GPC，有固定的分组关系。random SM 的编号与 GPC 的对应关系则取决于每颗芯片具体禁用了哪些 TPC；同一个 random SM ID 在不同芯片上可能属于不同的 GPC，因此需要逐卡测量。前面的 cluster 探测识别了 normal SM 的分组，接下来的带宽探测补全 random SM 的归属。</p>
 <figure id="figure-2">
   <a href="{{ page.url | append: 'figure-02.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 2 清晰版本">
     <img src="{{ page.url | append: 'figure-02.png' | relative_url }}" alt="图 2：同 GPC 与跨 GPC 的 L2 带宽扩展差异" width="964" height="428" loading="lazy" decoding="async">
   </a>
   <figcaption>图 2 · 同 GPC 与跨 GPC 的 L2 带宽扩展差异。摘自原论文 PDF 第 4 页。</figcaption>
 </figure>
-<p><strong>第二阶段：</strong>图 2 利用共享互连的带宽瓶颈补齐遗漏。把工作集设置得大于 L1、小于 L2，再逐步增加参与访问的 SM。如果这些 SM 来自同一个 GPC，它们会共享 Xbar 带宽，聚合吞吐较早饱和；若来自不同 GPC，带宽还能继续增长。论文在 H200 超过约 6 个 SM、B200 超过约 16 个 SM 后观察到明显区别。</p>
-<p>因此，可以让一个待归组的 TPC 与某个已知 GPC 的 SM 一起运行：如果新增的带宽很少，就支持“它们共享同一 GPC 互连”的判断。作者报告，两阶段方法在每块 GPU 上耗时不到一分钟，并在测试设备上与 <code>nvdebug</code> 的映射结果完全一致。</p>
+<p><strong>第二阶段：</strong>作者让 SM 反复读取大于 L1、小于 L2 的工作集，测量 L2 聚合带宽。图 2 中，H200 超过约 6 个 SM 后，同 GPC 的带宽增长明显慢于跨 GPC；B200 在 2–16 个 SM 时两组几乎重合，到 18–20 个 SM 才拉开差距，20 个 SM 时约为 4.4 与 4.9 TB/s。参与访问的 SM 较少时，单个 GPC 的交叉互连（Xbar）足以承载流量；SM 增多后，共享这条互连的带宽限制才显现。因此，这种探测需要用足够多的已知 SM 产生带宽争用。</p>
+<p>论文把连续编号的两个 random SM 作为同一 TPC 的一对来测试；此时已知的是 TPC 内的配对，待确定的是这个 TPC 属于哪个 GPC。原文未说明配对关系如何验证，也未报告 size 2 的探测结果。随后，作者让这一对 SM 依次与各个已知 GPC 的 SM 集合一起运行，比较加入前后的聚合带宽。如果增量小于一个 TPC 单独能提供的带宽，就表明它与该组 SM 争用同一条 GPC 互连，据此确定归属。作者报告，两阶段方法在每块 GPU 上耗时不到一分钟，所得映射在测试设备上与 <code>nvdebug</code> 完全一致。</p>
 
 <h3>§5.2 同型号芯片的拓扑，也可能不同</h3>
 <figure id="figure-3" class="reading-wide">
   <a href="{{ page.url | append: 'figure-03.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 3 清晰版本">
-    <img src="{{ page.url | append: 'figure-03.png' | relative_url }}" alt="图 3：H200 与 B200 的 SM 物理拓扑及 floorsweeping" width="2016" height="568" loading="lazy" decoding="async">
+    <img src="{{ page.url | append: 'figure-03.png' | relative_url }}" alt="图 3：H200 与 B200 的 SM 物理拓扑及 floorsweeping" width="2016" height="588" loading="lazy" decoding="async">
   </a>
   <figcaption>图 3 · H200 与 B200 的 SM 物理拓扑及 floorsweeping。摘自原论文 PDF 第 5 页。</figcaption>
 </figure>
-<p><strong>读图：</strong>图 3 把 normal TPC、random TPC 和被禁用的 TPC 放回 GPC 中。应关注三个问题：每个 GPC 剩多少可用 SM、哪些 SM 能参加大 cluster、两侧内存分区分别靠近多少 SM。图中的左右排列示意内存分区的拓扑关系；分区编号与实际芯片上的左右位置可以互换。</p>
-<p>在 28 块 H200 中，最常见的配置是 6 个 GPC 各有 16 个 SM、另外 2 个各有 18 个，出现于 23 块卡。其余芯片存在更不均匀的组合，极端情况下一个 GPC 只有 10 个 SM，另一些有 18 个。论文跨设备分析还发现，同一 GPU 内 GPC 的 SM 数量差距可达到 10 个。</p>
+<p><strong>读图：</strong>图 3 把 normal TPC、random TPC 和被禁用的 TPC 放回 GPC 中。应关注三个问题：每个 GPC 剩多少可用 SM、哪些 SM 能参加大 cluster、两侧内存分区分别靠近多少 SM。</p>
+<p>在 28 块 H200 中，最常见的配置是 6 个 GPC 各有 16 个 SM、另外 2 个各有 18 个，出现于 23 块卡。其余芯片存在更不均匀的组合，极端情况下一个 GPC 只有 10 个 SM，另一些有 18 个。</p>
 <p><strong>大 cluster 的调度还受到 SM 类型的限制。</strong>作者在一块每个 GPC 至少有 16 个 SM 的 H200 上发现，其中一个 GPC 包含 8 个 normal SM 和 8 个 random SM；这 8 个 random SM 无法承接大于 2 的 cluster。评估 cluster 可用容量时，需要同时记录 GPC 的 SM 数量及其 cluster 兼容性。这一结论描述的是论文测试的硬件与软件栈上的行为。</p>
-
-<h3>§5.3 资源划分接口交付的 SM，存在隐藏差异</h3>
-<p>论文使用默认模式的 Green Context：分配以 GPC 对齐的 8-SM 块为单位，跨 GPC 铺开。前面的 context 优先拿到 normal SM，最后一个 context 则可能包含 random SM。结果是，即便给租户相近的 SM 配额，较晚创建的 context 也可能更不适合大 cluster。</p>
-<p>附录 B 还讨论两种不同模式：<code>IGNORE_SM_COSCHEDULING</code> 可以更独立地分配 TPC，但不支持大于 2 的 cluster；<code>MAX_POTENTIAL_CLUSTER_SIZE</code> 更强调把 GPC 对齐的资源集中起来。正文实验均采用前述默认模式。</p>
-<p>MIG 则使用固定的实例配置。论文给出的 H200 例子中，<code>4g.71GB</code> 与 <code>3g.71GB</code> 分别提供 64 和 60 个 SM，合计 124 个，少于芯片启用的 132 个。为满足跨芯片一致的 profile，部分本来可用的 SM 也可能无法分配给这些实例。作者对 B200 某些 profile 数量给出了制造约束方面的可能解释，但这部分应保留为解释性推测。</p>
 
 <h2>§6 访存不对称：同一地址，从不同 SM 访问会怎样</h2>
 <p class="section-source">PDF p. 6–7；图 8，PDF p. 8；附录 C–D，PDF p. 13–14</p>
@@ -71,20 +58,20 @@ paper_url: https://arxiv.org/abs/2609.24270v1
   </a>
   <figcaption>图 4 · H200 与 B200 的 HBM 访问延迟分布。摘自原论文 PDF 第 6 页。</figcaption>
 </figure>
-<p>为了测 HBM，作者让固定 SM 上的单个线程随机访问约十万个地址，先用 <code>discard.global.L2</code> 排除 L2 命中，再用绕过 L1 的 <code>ld.cg</code> 读取，并以 <code>clock64</code> 计时。图 4 中明显分离的峰，说明访存路径存在不同的成本。</p>
+<p>为了测 HBM，作者让固定 SM 上的单个线程随机访问约十万个地址，对每个地址先用 <code>discard.global.L2</code> 使 L2 缓存行失效，再用绕过 L1 的 <code>ld.cg</code> 读取，并以 <code>clock64</code> 计时。这两步使被计时的访问到达 HBM，避免把缓存命中误当成较快的内存访问。图 4 将这些延迟画成分布，本地与远端路径形成两个主要的峰。</p>
 <figure id="figure-5">
   <a href="{{ page.url | append: 'figure-05.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 5 清晰版本">
     <img src="{{ page.url | append: 'figure-05.png' | relative_url }}" alt="图 5：H200 与 B200 的 L2 访问延迟分布" width="960" height="422" loading="lazy" decoding="async">
   </a>
   <figcaption>图 5 · H200 与 B200 的 L2 访问延迟分布。摘自原论文 PDF 第 6 页。</figcaption>
 </figure>
-<p>L2 测试先从某个 SM 把数据加载到它的本地 L2，再分别从本地或不同亲和性的 SM 发起第二次访问。这样尽量把 HBM 成本与 L2 分区间的访问成本分开。图 5 显示，从不同亲和性的 SM 访问同一个 L2 分区，会得到不同的延迟。</p>
+<p>L2 测试先选一个归属 SM s 本地分区的地址 p，用 s 将它读入 L2。测本地延迟时，由 s 再读一次 p；测远端延迟时，改由另一分区的 SM s′ 读取同一个 p。预热和计时访问都使用 <code>ld.cg</code> 绕过 L1。这样，第二次访问的数据已在 L2 中，两组测量改变的是请求者与该 L2 分区的位置关系。图 5 展示了由此得到的延迟差。</p>
 <div class="reading-table"><table>
 <thead><tr><th>访问对象</th><th>H200：本地 → 远端</th><th>B200：本地 → 远端</th></tr></thead>
 <tbody><tr><td>HBM 延迟</td><td>约 490 → 655 cycles（+34%）</td><td>约 552 → 920 cycles（+67%）</td></tr>
 <tr><td>L2 延迟</td><td>约 309 → 466 cycles（+51%）</td><td>约 364 → 725 cycles（接近 2 倍）</td></tr></tbody>
 </table></div>
-<p>这些数值是论文微基准测得的<strong>时钟周期</strong>。换算为纳秒或比较跨代际的绝对时间时，需要结合各自的时钟频率。B200 的本地 HBM 峰还有细分迹象，作者据此推测 die 内可能仍有更细的延迟差异；但峰有重叠，未能据此清楚分离边界，而带宽和容量测试在这一层表现得更像统一分区。</p>
+<p>这些数值是论文微基准测得的<strong>时钟周期</strong>。换算为纳秒或比较跨代际的绝对时间时，需要结合各自的时钟频率。</p>
 <p>对每个 SM 重复相同访问，可以建立 SM 到内存分区的亲和关系。两边的 SM 数量未必相等：论文观察到 H200 两个分区之间最多相差 12 个 SM，B200 最多相差 8 个。因此即使把数据平均切成两份，也可能产生计算负载不均。</p>
 
 <h3>地址怎样选择内存分区：XOR hash 与 4 KB 交错</h3>
@@ -94,8 +81,9 @@ paper_url: https://arxiv.org/abs/2609.24270v1
   </a>
   <figcaption>图 6 · B200 NUMA 分区的 XOR 地址 hash。摘自原论文 PDF 第 6 页。</figcaption>
 </figure>
-<p>作者逐位翻转物理地址并观察延迟类别，识别参与分区选择的地址位。H200 和 B200 各有 16 个参与位，H100 PCIe 为 14 个；最小参与位是 bit 12。这意味着地址按 <strong>4 KB 的分区交错粒度</strong>映射。虚拟内存页大小由地址翻译机制另行决定，可以采用更大的页面。</p>
-<p>抽象地，可以把分区号写成 <code>partition = parity(physical_address &amp; MASK)</code>：先保留掩码指定的位，再计算这些位中 1 的个数的奇偶性。不同 SKU 的掩码不一定相同。图 6 展示 B200 的位选择关系；其他设备需使用对应的掩码。作者报告，识别 hash 大约需要 10 秒；可选的整个 80 GB 地址空间验证约需 15 分钟。</p>
+<p>前面的延迟分类还可以用来识别地址映射：固定发起访问的 SM，每次只翻转物理地址的一位，再测 HBM 延迟。如果地址从本地延迟类别切换到远端类别，或反过来，就说明这一位参与了分区选择。论文由此在 H200 和 B200 上分别找到 16 个参与位。
+</p><p>最低参与位是 bit 12。一个对齐的 4 KB 区域内，变化的只有 bit 0–11，因此区域内所有地址都属于同一分区；改变 bit 12 会切换分区。这给出了 <strong>4 KB 的硬件分区粒度</strong>。页表负责的虚拟地址翻译可以使用更大的页面，后面的分配方法正是利用了这两个粒度的区别。</p>
+<p>抽象地，可以把分区号写成 <code>partition = parity(physical_address &amp; MASK)</code>：先保留掩码指定的位，再计算这些位中 1 的个数的奇偶性。不同 GPU 型号的分区掩码可能不同。图 6 展示 B200 的位选择关系；其他设备需使用对应的掩码。</p>
 
 <h3>§6.2 有效 L2 容量为何小于标称容量</h3>
 <figure id="figure-7">
@@ -104,28 +92,25 @@ paper_url: https://arxiv.org/abs/2609.24270v1
   </a>
   <figcaption>图 7 · 不同 GPU 随工作集增大呈现的有效 L2 容量。摘自原论文 PDF 第 7 页。</figcaption>
 </figure>
-<p><strong>读图：</strong>图 7 扫描工作集大小，观察带宽何时从 L2 水平跌落。H200 标称 60 MB L2，在这项测试中约 39.5 MB 就出现转折；B200 标称 126 MB，对应转折约为 81.5 MB。两者都只有标称容量的约 65%。这些转折反映<strong>该访问模式下可利用的 L2 容量</strong>。后续实验通过分区访问和缓存副本，解释它与标称物理容量的差距。</p>
+<p><strong>读图：</strong>图 7 使用读密集 kernel，并逐步增大它访问的数据量（工作集）。工作集能装进 L2 时，缓存命中提供较高带宽；装不下时，更多访问落到 HBM，带宽明显下降。曲线的转折位置由此给出有效容量的估计。H200 标称 60 MB L2，在这项测试中约 39.5 MB 就出现转折；B200 标称 126 MB，对应转折约为 81.5 MB。两者都只有标称容量的约 65%。这些转折反映<strong>该访问模式下可利用的 L2 容量</strong>。后续实验通过分区访问和缓存副本，解释它与标称物理容量的差距。</p>
 <figure id="figure-8">
   <a href="{{ page.url | append: 'figure-08.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 8 清晰版本">
     <img src="{{ page.url | append: 'figure-08.png' | relative_url }}" alt="图 8：本地与远端 NUMA 分区的访问带宽" width="964" height="404" loading="lazy" decoding="async">
   </a>
   <figcaption>图 8 · 本地与远端 NUMA 分区的访问带宽。摘自原论文 PDF 第 8 页。</figcaption>
 </figure>
-<p>进一步只访问某个分区的本地数据，图 8 显示 H200 和 B200 的单分区 L2 容量分别约为 30 MB 和 62 MB。远端访问则受连接两个分区的 <strong>LTC fabric</strong> 限制，跨分区互连成为吞吐瓶颈。图中的容量数值由带宽曲线的转折位置估计。</p>
-<p>作者又设计了失效与重新加载实验：本地 SM 读一个归属远端分区的地址，随后由远端 SM 执行失效操作，再由本地 SM 重读。后一次访问仍呈现约 310 cycles（H200）或 360 cycles（B200）的本地 L2 延迟。这支持一个解释：<strong>远端取回的数据也会被复制到请求者的本地 L2</strong>。</p>
-<p>于是同一份数据可能占据两个分区的容量，减少可容纳的唯一数据量，并增加相互驱逐。该实验支持跨分区复制与一致性行为的判断，但论文没有完整逆向所有 coherence 状态和协议细节。</p>
+<p>为了将两侧容量分开测量，作者利用刚刚还原的 hash，把连续内存区域中的 4 KB 页面按分区分类，再限制 kernel 只读取本地页面或远端页面，重新扫描工作集大小。图 8 显示 H200 和 B200 的单分区 L2 容量分别约为 30 MB 和 62 MB。远端访问则受连接两个分区的 <strong>LTC fabric</strong> 限制，跨分区互连成为吞吐瓶颈。图中的容量数值由带宽曲线的转折位置估计。</p>
+<p><strong>远端读取会在请求者的 L2 留下副本吗？</strong>作者用三步实验检查这件事：</p>
+<ol>
+<li>本地 SM 读取一个归属远端分区的地址，让跨分区取数实际发生。</li>
+<li>远端 SM 对这个地址执行失效操作，去掉远端的缓存副本。</li>
+<li>本地 SM 再次读取同一地址，并测量延迟。</li>
+</ol>
+<p>第三步仍只需约 310 cycles（H200）或 360 cycles（B200），与本地 L2 命中相符。远端副本已被失效，本地仍能快速取到数据，支持<strong>第一次跨分区读取在本地 L2 留下了副本</strong>的判断。副本会占用容量，并与原有缓存行争用空间，因此跨分区访问会减少缓存可容纳的唯一数据量。这里确认的是复制行为；具体工作负载能利用多少容量，还要通过前面的容量扫描测量。</p>
 
-<h2>§7 调度启示：三个场景，分别验证哪种收益</h2>
-<p class="section-source">PDF p. 8–12；附录 E–F，PDF p. 14–15</p>
-<div class="reading-table"><table>
-<thead><tr><th>场景</th><th>控制什么</th><th>论文报告的代表结果</th></tr></thead>
-<tbody><tr><td>整卡 kernel</td><td>数据位置、SM 与工作分配</td><td>最高 1.22× 加速</td></tr>
-<tr><td>同一应用的 prefill/decode 并行</td><td>SM 分区与私有/共享数据布局</td><td>H200 decode 吞吐提高 14.3%</td></tr>
-<tr><td>不同租户共置</td><td>分配顺序、cluster 兼容性</td><td>不同顺序下最高 1.33× 性能差异</td></tr></tbody>
-</table></div>
-<p>这三项指标分别来自三组实验：前两项衡量特定配置下的优化收益，第三项衡量<strong>交换分配顺序造成的性能差异</strong>。下文分别说明各自的基线与测试条件。</p>
-
-<h3>§7.1 整卡 kernel：让数据与执行它的 SM 靠在一起</h3>
+<h2>§7.1 调度实验一：数据本地化后，任务应该怎样分</h2>
+<p class="section-source">PDF p. 8–9；附录 E–F，PDF p. 14–15</p>
+<h3>先把数据放进指定分区</h3>
 <p>整卡 kernel 的各个 SM 也可能访问远端数据，因此同样会受到 NUMA 影响。作者先提供两种定向内存分配方式，再改写工作分配。</p>
 <figure id="figure-9">
   <a href="{{ page.url | append: 'figure-09.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 9 清晰版本">
@@ -144,17 +129,11 @@ paper_url: https://arxiv.org/abs/2609.24270v1
 <li><code>page_offset</code>：相对分配起点的页偏移，页内字节偏移保持不变。</li>
 </ul>
 <p>直观上，先检查一对页面中的第一页是否属于目标分区：属于就取它，不属于就加 1，取另一页。每次地址转换只需固定数量的位运算，无需查表。对由完整页面对组成的 S 字节区域，每个分区的逻辑视图容量为 S/2。</p>
-<p><strong>实现条件很重要：</strong>这种方法需要修改驱动，以提供物理连续的内存分配及其物理起始地址。作者曾尝试直接使用 4 KB 虚拟内存页，但 TLB 压力使访存型 kernel 性能下降，因此最终保留大页，在页内部进行 4 KB 粒度的选择。</p>
+<p><strong>实现条件很重要：</strong>这种方法需要修改驱动，以提供物理连续的内存分配及其物理起始地址。作者曾尝试直接使用 4 KB 虚拟内存页，但小页需要更多地址翻译条目，增加了地址翻译缓存（TLB）的压力，使访存型 kernel 性能下降，因此最终保留大页，在页内部进行 4 KB 粒度的选择。</p>
 <p><strong>直接分配：</strong>另一种方法修改驱动中与 MLOPart 相关的代码，直接指定目标 NUMA 分区，省掉 kernel 内的地址重映射。论文将其适用范围限定在 Blackwell 及更新、具有所需支持的 GPU。</p>
 <p>随后，作者把 kernel 转成 <strong>persistent thread blocks（PTB）</strong>：每个 SM 固定一个 block，以循环领取任务。知道 block 的 SM ID 后，就能把它分配到本地数据对应的任务；如果两侧 SM 数不等，还要按 SM 数量比例切分工作，使两侧的任务量匹配各自的计算容量。</p>
-<figure id="figure-10">
-  <a href="{{ page.url | append: 'figure-10.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 10 清晰版本">
-    <img src="{{ page.url | append: 'figure-10.png' | relative_url }}" alt="图 10：NUMA-aware kernel 在不同工作集下的加速比" width="968" height="1644" loading="lazy" decoding="async">
-  </a>
-  <figcaption>图 10 · NUMA-aware kernel 在不同工作集下的加速比。摘自原论文 PDF 第 9 页。</figcaption>
-</figure>
-<p><strong>读图：</strong>图 10 每个点对应不同工作集和配置，横向虚线为原始实现的 1×。测试涵盖 MHA、GQA、MLA 的 prefill/decode，以及 GroupGEMM；H200 与 B200 的两个分区在这组实验中分别为 66/66 和 74/74 个 SM。最好的结果是 B200 GroupGEMM 约 1.22×，但小工作集等配置也存在低于 1× 的点。</p>
-<p>减少远端访问的收益需要覆盖新增的执行开销。PTB 的启动、读取 SM ID、软件地址重映射都会增加开销；如果原始任务很短，或额外算术本身成为负担，收益就可能被吃掉。H200 的 GroupGEMM 尤其受到重映射指令的影响。</p>
+<h3>用两个对照检查优化代价</h3>
+<p><strong>地址计算开销：</strong>H200 使用上述间接分配，kernel 每次访问要多做重映射运算。作者将优化后的 MHA prefill（多头注意力的预填充阶段）、GroupGEMM（一个 kernel 内执行多组矩阵乘法）与各自原实现比较，用 PC sampling 观察 warp 发射指令的样本比例，结果见图 11(a)。这一步检查为了减少远端访问，执行端增加了多少指令活动。</p>
 <figure id="figure-11">
   <a href="{{ page.url | append: 'figure-11.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 11 清晰版本">
     <img src="{{ page.url | append: 'figure-11.png' | relative_url }}" alt="图 11：重映射指令开销与拓扑感知负载均衡" width="968" height="452" loading="lazy" decoding="async">
@@ -162,114 +141,25 @@ paper_url: https://arxiv.org/abs/2609.24270v1
   <figcaption>图 11 · 重映射指令开销与拓扑感知负载均衡。摘自原论文 PDF 第 9 页。</figcaption>
 </figure>
 <p>图 11(a) 用 PC sampling 观察指令开销：H200 GroupGEMM 中，Selected 状态（warp 发射了一条指令）的样本比例从约 25.96% 增至 35.04%；MHA prefill 则从 13.92% 增至 14.71%。<strong>这些比例表示采样中 warp 发射指令的占比</strong>。它们用于分析新增地址计算的影响；实际耗时变化需结合运行时间测量。</p>
-<p>图 11(b) 则在两侧为 70/78 个 SM 的 B200 上测试 MLA decode。只追求本地性、却忽略计算容量比例时，部分配置性能降到约 0.78×；把任务按拓扑重新平衡后，最高达到约 1.10×。这说明局部性优化还必须同时解决负载均衡。</p>
+<p><strong>负载均衡：</strong>图 11(b) 在两个分区分别有 70、78 个 SM 的 B200 上运行 MLA decode（多头潜在注意力的逐 token 解码），比较两种都使用本地数据的分配方式：一组忽略 SM 数量差异，另一组按各分区的 SM 数量分配数据和任务。横轴是注意力计算所用的 Key/Value 数据量，即 KV 工作集大小，纵轴是相对原始 kernel 的加速比，1× 表示性能相同。忽略拓扑时，部分配置降到约 0.78×；按拓扑分配后，最高约 1.10×。
+</p><p>这组实验的关键是：两边都访问本地数据，但如果两边各领一半工作，70 个 SM 的一侧就承担了更高的每 SM 负载，整个 kernel 要等它完成。按计算资源比例分配工作，才能同时利用本地性和两侧的计算能力。具体收益随工作集变化，不能只用“远端访问减少了”来预测加速比。</p>
 
-<h3>§7.2 应用内并行：prefill 与 decode 怎样共享 GPU</h3>
-<p>一个 LLM 服务可以让 prefill 与 decode 并行。两者共享权重和 KV，同时各自拥有私有中间状态。对于无法任意修改的 kernel，把所有地址访问都换成软件重映射并不现实。</p>
-<figure id="figure-12">
-  <a href="{{ page.url | append: 'figure-12.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 12 清晰版本">
-    <img src="{{ page.url | append: 'figure-12.png' | relative_url }}" alt="图 12：通过驱动映射共享不同 MIG 实例的内存" width="968" height="332" loading="lazy" decoding="async">
-  </a>
-  <figcaption>图 12 · 通过驱动映射共享不同 MIG 实例的内存。摘自原论文 PDF 第 10 页。</figcaption>
-</figure>
-<p>作者在 MIG 的基础上修改驱动，让一个实例能够映射另一个实例的内存。图 12 表示这种跨实例映射：<strong>私有数据放在各自的本地分区，共享权重和 KV 则均匀分布在两边</strong>，以 64 KB 映射粒度交错。这里的 64 KB 是该实现共享内存映射的粒度，与前面的硬件 4 KB 分区 hash 粒度不同。跨实例映射依赖本文对驱动的修改。</p>
-<p>测试使用 mini-SGLang 与 Qwen3-8B。H200 分给 prefill/decode 的 SM 数为 64/56，B200 为 64/64；prefill 的 batch 为 4、序列长度为 4K，decode 的 batch 为 128、平均 KV 长度为 512。作者比较：</p>
-<ul>
-<li><strong>CA：</strong>cluster-compatible、NUMA-agnostic；使用 Green Context 与 MPS，满足大 cluster 的计算布局，但不利用内存亲和性。</li>
-<li><strong>CM：</strong>cluster-mismatched；内存策略与 CA 相同，但 SM 集合不能完全满足 cluster size 8 的要求。</li>
-<li><strong>AN：</strong>asymmetry-aware NUMA placement；利用 MIG 和上述内存布局，同时满足 cluster 兼容性与 NUMA 放置。</li>
-</ul>
-<figure id="figure-13">
-  <a href="{{ page.url | append: 'figure-13.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 13 清晰版本">
-    <img src="{{ page.url | append: 'figure-13.png' | relative_url }}" alt="图 13：不同放置策略下 prefill 与 decode 的吞吐" width="960" height="516" loading="lazy" decoding="async">
-  </a>
-  <figcaption>图 13 · 不同放置策略下 prefill 与 decode 的吞吐。摘自原论文 PDF 第 10 页。</figcaption>
-</figure>
-<p><strong>读图：</strong>先看 standalone：CA 与 AN 单独运行的吞吐接近，说明在这些测试下方案没有明显的独立运行开销。再看 overlap：相对 CA，AN 的 decode 吞吐在 H200 上提高 14.3%，B200 上提高 10.4%；prefill 更偏计算密集，收益较小。</p>
-<p>CM 则揭示另一条路径：B200 decode 吞吐相对 CA 下降 18.9%，即使内存策略没有变，cluster 不匹配也会造成损失。H200 的影响较弱，论文将其联系到实际多数 kernel 使用大小为 2 的 cluster。这些收益对应本节列出的模型、batch 和 kernel 配置。</p>
-
-<h3>§7.3 应用间共置：先申请和后申请，得到的资源等价吗</h3>
-<figure id="figure-14">
-  <a href="{{ page.url | append: 'figure-14.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 14 清晰版本">
-    <img src="{{ page.url | append: 'figure-14.png' | relative_url }}" alt="图 14：Green Context 两次分配实际得到的 SM" width="964" height="588" loading="lazy" decoding="async">
-  </a>
-  <figcaption>图 14 · Green Context 两次分配实际得到的 SM。摘自原论文 PDF 第 11 页。</figcaption>
-</figure>
-<p>这组实验让应用 A 使用 cluster size 2、4 或 8，应用 B 固定使用 size 2 的 GEMM，再交换二者申请 Green Context 的顺序。图 14 展示了两次分配实际拿到的 SM：最后的 context 更容易包含 random SM，也可能留下不适合较大 cluster 的 GPC 内碎片。</p>
+<h2>§7.3 调度实验二：同样的申请，分配顺序为何影响性能</h2>
+<p class="section-source">PDF p. 10–11</p>
+<p>作者用 Green Context 与 MPS 把 SM 分给两个同时运行 GEMM 的应用。A 分别使用大小为 2、4、8 的 cluster，B 始终使用 size 2。对每一种组合，先让 A 拿第一组 SM、B 拿第二组，再交换两者的分配顺序，比较吞吐。这样可以观察同一应用拿到不同 SM 集合之后，性能如何变化。</p>
+<p>论文测试的默认 Green Context 模式以 GPC 对齐的 8-SM 块跨 GPC 分配资源，较晚分配的集合会包含前面测出的 random SM。实验实际分配数量为 H200 先分 64、后分 68 个 SM，B200 先分 72、后分 76 个 SM。因此还要结合 cluster 大小，判断这些 SM 中有多少能真正参与执行。</p>
 <figure id="figure-15">
   <a href="{{ page.url | append: 'figure-15.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 15 清晰版本">
-    <img src="{{ page.url | append: 'figure-15.png' | relative_url }}" alt="图 15：交换应用分配顺序产生的吞吐差异" width="968" height="368" loading="lazy" decoding="async">
+    <img src="{{ page.url | append: 'figure-15.png' | relative_url }}" alt="图 15：交换应用分配顺序产生的吞吐差异" width="968" height="432" loading="lazy" decoding="async">
   </a>
   <figcaption>图 15 · 交换应用分配顺序产生的吞吐差异。摘自原论文 PDF 第 11 页。</figcaption>
 </figure>
-<p><strong>读图：</strong>图 15 中 A 先申请与后申请的吞吐差，在 cluster size 4 时约为 H200 1.18×、B200 1.11×；size 8 时约为 H200 1.18×、B200 1.33×。这组实验实际分配的 SM 数为：H200 为先分 64、后分 68，B200 为先分 72、后分 76。后分者甚至拿到更多 SM，仍可能更慢。</p>
+<p><strong>读图：</strong>A、B 都使用 size 2 时，两种顺序的吞吐几乎相同；增大 A 的 cluster 后，先申请更快。图 15 中 A 先申请与后申请的吞吐差，在 cluster size 4 时约为 H200 1.18×、B200 1.11×；size 8 时约为 H200 1.18×、B200 1.33×。后分者拿到的 SM 更多，其中的 random SM 却无法用于这些大 cluster，因而可能更慢。</p>
 <figure id="figure-16">
   <a href="{{ page.url | append: 'figure-16.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 16 清晰版本">
-    <img src="{{ page.url | append: 'figure-16.png' | relative_url }}" alt="图 16：cluster size 4 与 8 在剩余 SM 上的碎片差异" width="964" height="168" loading="lazy" decoding="async">
+    <img src="{{ page.url | append: 'figure-16.png' | relative_url }}" alt="图 16：cluster size 4 与 8 在剩余 SM 上的碎片差异" width="964" height="180" loading="lazy" decoding="async">
   </a>
   <figcaption>图 16 · cluster size 4 与 8 在剩余 SM 上的碎片差异。摘自原论文 PDF 第 11 页。</figcaption>
 </figure>
 <p>图 16 给出一个很直观的例子：B200 的一个完整 GPC 有 20 个 SM，若 B 占去 8 个，就还剩 12 个。对于 size 4，12 个 SM 可以形成 3 组；对于 size 8，只能形成 1 组，另外 4 个无法凑成第二组。再叠加 random SM 的限制，配额表面上“足够”，实际也可能用不满。</p>
-<p><strong>【帮助理解的简化模型】</strong>如果把每个 block 占一个 SM、同 GPC 内按 cluster 大小 c 成组作为假设，可用容量近似写成 <code>Σ_g c × floor(n_g / c)</code>，其中 <code>n_g</code> 是该 GPC 内剩余且符合 cluster 条件的 SM 数。这个式子只解释整组分配造成的碎片。<strong>完整的 occupancy 分析还需纳入寄存器、共享内存等资源限制。</strong></p>
-<p>因此，论文对多租户调度的建议是：把租户的 cluster 要求与实际 SM 拓扑纳入分配，同时利用较小 cluster 的任务填补碎片；只按 SM 数量或申请先后分资源，不足以保证性能公平。</p>
-
-<h2>§8–9 讨论与结论：哪些发现可以推广</h2>
-<p class="section-source">PDF p. 12</p>
-<p>本文最稳妥的结论是：<strong>GPU 内部的物理不对称，已经能够影响软件层的细粒度调度。</strong>对整卡 kernel，优化要同时考虑本地性、地址计算成本和负载平衡；对应用内并行，私有状态与共享状态需要不同放置策略；对多租户，cluster 兼容性使“数量相同”无法自动等价于“能力相同”。</p>
-<p>作者也讨论 GPU 模拟器的影响：如果模型把所有 SM 视为对称、把 L2/HBM 视为均匀可达，就可能遗漏这些现象。作者将<strong>把测得的拓扑与延迟加入模拟器</strong>列为后续研究方向。</p>
-<p>结论的适用范围需要与测量边界对应：SM 的具体编号、地址 hash、Green Context 行为依赖设备和软件栈；微基准的延迟与有效容量依赖访问模式；性能收益依赖 kernel、工作集和并发配置。论文提供了测量这些因素的方法，使调度器能够根据当前设备的拓扑和访存特性分配资源。</p>
-
-<h2>附录补读：把拓扑和访存层次串起来</h2>
-<h3>附录 A H100 PCIe：同样的方法，得到不同的分组</h3>
-<p class="section-source">PDF p. 13</p>
-<figure id="figure-17">
-  <a href="{{ page.url | append: 'figure-17.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 17 清晰版本">
-    <img src="{{ page.url | append: 'figure-17.png' | relative_url }}" alt="图 17：H100 PCIe 的 SM 拓扑" width="960" height="568" loading="lazy" decoding="async">
-  </a>
-  <figcaption>图 17 · H100 PCIe 的 SM 拓扑。摘自原论文 PDF 第 13 页。</figcaption>
-</figure>
-<p>图 17 是 H100 PCIe 的还原结果，共 114 个启用 SM。它的 GPC 数量、normal/random SM 的组合以及被禁用的区域，与前面的 H200/B200 不同。这个例子强化了一个工程含义：<strong>调度前应测出当前设备的拓扑。</strong>图中的结果适用于这块 H100 PCIe。</p>
-
-<h3>附录 C–E 三层映射不要混淆</h3>
-<p class="section-source">PDF p. 13–14</p>
-<figure id="figure-18">
-  <a href="{{ page.url | append: 'figure-18.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 18 清晰版本">
-    <img src="{{ page.url | append: 'figure-18.png' | relative_url }}" alt="图 18：地址翻译、NUMA hash 与 L2/HBM 访问路径" width="964" height="612" loading="lazy" decoding="async">
-  </a>
-  <figcaption>图 18 · 地址翻译、NUMA hash 与 L2/HBM 访问路径。摘自原论文 PDF 第 14 页。</figcaption>
-</figure>
-<p>图 18 可以作为全文的访存总图。从一个 kernel 的指针开始，至少要区分：</p>
-<ol>
-<li><strong>虚拟地址 → 物理地址：</strong>由页表与 TLB 参与，论文的最终方案保留大页以降低翻译压力。</li>
-<li><strong>物理地址 → NUMA 分区：</strong>通过本文逆向的 XOR hash，最低参与位对应 4 KB 交错粒度。</li>
-<li><strong>分区内部 → L2 slice / HBM channel：</strong>需要更细的地址映射规则，本文重点分析到 NUMA 分区这一层。</li>
-</ol>
-<p>当目标地址属于远端分区，请求要经过 LTC fabric；返回的数据还可能在本地 L2 留下副本。因此“远端带宽瓶颈”和“有效 L2 容量减少”有共同的跨分区访问背景，分别体现为吞吐上限和可容纳的唯一数据量，需要各自测量。</p>
-
-<h3>附录 G AMD MI300X：计算组织不同，访存仍然不均匀</h3>
-<p class="section-source">PDF p. 15–16</p>
-<figure id="figure-19">
-  <a href="{{ page.url | append: 'figure-19.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 19 清晰版本">
-    <img src="{{ page.url | append: 'figure-19.png' | relative_url }}" alt="图 19：MI300X 的 XCD、AID 与内存组织" width="968" height="740" loading="lazy" decoding="async">
-  </a>
-  <figcaption>图 19 · MI300X 的 XCD、AID 与内存组织。摘自原论文 PDF 第 15 页。</figcaption>
-</figure>
-<p>AMD MI300X 提供了一个对照。论文描述的组织为 8 个 XCD、4 个 AID，每个 AID 对应 2 个 XCD。每个 XCD 完整设计有 40 个 CU，启用 38 个；不像上述 NVIDIA 实验，它没有同样的硬件 thread-block-cluster 机制，因此不能直接照搬 normal/random SM 的调度结论。</p>
-<p>每个 XCD 有 4 MB L2，每个 AID 有 64 MB Infinity Cache，并连接两个 HBM3 堆栈。图中的 Infinity Fabric 示意计算芯粒与 I/O 芯粒之间的连接关系。虽然计算资源更均匀，访存亲和性仍然存在。</p>
-<figure id="figure-20">
-  <a href="{{ page.url | append: 'figure-20.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 20 清晰版本">
-    <img src="{{ page.url | append: 'figure-20.png' | relative_url }}" alt="图 20：MI300X 从 XCD 0 访问不同亲和性地址的延迟" width="968" height="536" loading="lazy" decoding="async">
-  </a>
-  <figcaption>图 20 · MI300X 从 XCD 0 访问不同亲和性地址的延迟。摘自原论文 PDF 第 16 页。</figcaption>
-</figure>
-<p>作者在 32 GiB 空间中采样一百万个按 128 字节对齐的随机地址，从各 XCD 测量，绕过 L1/L2 并处理 Infinity Cache 的缓存影响。每个地址做多次测量并保留最小值。结果显示 XCD 按 <code>{0,1}</code>、<code>{2,3}</code>、<code>{4,5}</code>、<code>{6,7}</code> 形成四组亲和关系，各对应约四分之一的采样地址。</p>
-<p>图 20 从 XCD 0 出发，本地、邻近、对侧三类地址的平均访问延迟分别约为 707、817、926 cycles。这里的“邻近”和“对侧”是作者根据延迟推断的类别，实际互连跳数仍待验证。三条分布各自归一化，用于比较各类地址内部的延迟分布；各类地址在整个采样空间中的占比需另行统计。</p>
-
-<h2>读完后值得留下的几个问题</h2>
-<ul>
-<li><strong>拓扑何时重新探测？</strong>本文展示了快速探测方法，但长期系统还需确定驱动变化、资源模式切换后哪些信息需要刷新。</li>
-<li><strong>什么时候值得定向放置？</strong>远端流量减少的收益，要与重映射指令、PTB 和负载不均的代价一起算；图 10–11 已说明局部性提高并不必然加速。</li>
-<li><strong>共享数据该复制、交错还是集中？</strong>本文采用私有本地、共享交错的策略；其他访问比例、写入行为与容量压力下，最合适的选择仍需测量。</li>
-<li><strong>公平性该按什么衡量？</strong>可以把满足租户 cluster 条件的有效计算资源及内存亲和性纳入公平性指标。这是由实验引出的后续设计问题。</li>
-</ul>
-<p><strong>一句话记忆：</strong>这篇论文让调度器从“分多少 SM、多少显存”，进一步走向“分哪些 SM、数据放在哪里，以及这些资源能否一起高效工作”。</p>
+<p>这组对照把申请顺序带来的性能差异，联系到了可检查的硬件条件：哪些 SM 支持当前 cluster、同一 GPC 内的剩余资源能组成多少完整的 cluster。调度器需要按应用的 cluster 要求评估这组 SM 的实际可用容量，再决定把资源分给谁。</p>

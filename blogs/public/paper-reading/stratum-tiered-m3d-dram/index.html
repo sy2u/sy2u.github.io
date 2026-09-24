@@ -1,0 +1,150 @@
+---
+title: "Stratum: System-Hardware Co-Design with Tiered Monolithic 3D-Stackable DRAM for Efficient MoE Serving"
+date: 2026-09-24
+published: true
+blog_category: paper-reading
+listing_summary: "利用 Mono3D DRAM 的层间延迟差异放置冷热专家，并通过 Attention、MoE 的数据切分和流水线发挥近存带宽。"
+paper_url: https://arxiv.org/abs/2510.05245
+---
+
+<p class="blog-disclaimer">结合原有阅读笔记与论文整理，含 AI 辅助，未独立复现实验。</p>
+
+<p><strong>Stratum 把 MoE 专家访问频率的不均匀，与 Mono3D DRAM 各层访问延迟的不均匀配在一起：常用专家放快层，少用专家放慢层。</strong>请求主题能够帮助预测哪些专家常被选中，因此系统按主题组织请求，并在批次切换时调整专家位置，让有限的快层容量服务于更多实际访问。</p>
+<p>高内部带宽还需要合适的计算安排。Stratum 把 Attention 和专家计算放到 DRAM 下方的逻辑芯片上，让大部分数据由本地 bank 直接供给计算单元；PU 之间只交换需要共享的输入、归约信息和结果，再用不同 head 或专家的计算覆盖通信时间。这样，内存结构、数据放置和执行顺序共同影响吞吐。</p>
+
+<h2>§2.1、§6.2 快慢层从哪里来</h2>
+<p class="section-source">PDF p. 3–4、10–11</p>
+<p>传统 GPU 需要通过 interposer 从 HBM 取数；即使在 HBM 底部放近存计算单元，DRAM die 与逻辑 die 之间的 TSV 数量也限制了内部带宽。Mono3D DRAM 在同一晶圆上逐层构造存储单元，再通过高密度 Cu–Cu hybrid bonding 连接独立的逻辑 die。NMP（Near-Memory Processing，近存计算）因此可以利用更宽的内部数据通路。</p>
+<figure id="figure-3">
+  <a href="{{ page.url | append: 'figure-03.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 3 清晰版本">
+    <img src="{{ page.url | append: 'figure-03.png' | relative_url }}" alt="图 3：HBM 与 Mono3D DRAM 的内部互连及 xPU 接口" width="1800" height="967" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 3 · HBM 与 Mono3D DRAM 的内部互连及 xPU 接口。原论文 PDF 第 4 页。</figcaption>
+</figure>
+<p>图 3 中，xPU 与内存仍通过 interposer 通信。变宽的是<strong>DRAM 到下方 NMP 的内部通路</strong>，所以加速依赖于把访存密集的计算放到 NMP，减少大批权重和 KV cache 往返 xPU。</p>
+<figure id="figure-2">
+  <a href="{{ page.url | append: 'figure-02.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 2 清晰版本">
+    <img src="{{ page.url | append: 'figure-02.png' | relative_url }}" alt="图 2：字线阶梯结构与不同层的激活延迟" width="1800" height="1252" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 2 · 字线阶梯结构与不同层的激活延迟。原论文 PDF 第 3 页。</figcaption>
+</figure>
+<p>图 2 解释了分层延迟的电路来源。字线（WL）通过阶梯结构连接不同高度的存储层；越靠阶梯底部，字线引出路径越长，寄生电阻和电容越大，激活所需时间也越长。本文用 <code>tRCD</code> 表示激活一行到能够发起列访问之间的等待时间。模型中，接近顶部的 WL1 为 1.11 ns，底部 WL1024 达到 22.88 ns。</p>
+<figure id="figure-14">
+  <a href="{{ page.url | append: 'figure-14.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 14 清晰版本">
+    <img src="{{ page.url | append: 'figure-14.png' | relative_url }}" alt="图 14：分层后的完整访问延迟" width="1800" height="947" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 14 · 分层后的完整访问延迟。原论文 PDF 第 11 页。</figcaption>
+</figure>
+<p>控制器把 1024 层分成八个时序档位，每档 4 GB，按目标行所在档位设置等待时间。图 14 的纵轴包含完整访问路径，最快与最慢档位约为 34.56 和 55.15 ns，相差约 1.6 倍。<strong>激活等待时间的差距只占总访问延迟的一部分</strong>，因此不能直接用两端 <code>tRCD</code> 的比值估计吞吐收益。</p>
+
+<h2>§3、§5 专家怎样进入快层，硬件怎样执行迁移</h2>
+<p class="section-source">PDF p. 4–6、8–9；时序表实现见 PDF p. 11</p>
+<figure id="figure-7" class="reading-wide">
+  <a href="{{ page.url | append: 'figure-07.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 7 清晰版本">
+    <img src="{{ page.url | append: 'figure-07.png' | relative_url }}" alt="图 7：与 channel、bank 对应的 PU、PE，以及时序表和行交换缓冲" width="2400" height="772" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 7 · 与 channel、bank 对应的 PU、PE，以及时序表和行交换缓冲。原论文 PDF 第 6 页。</figcaption>
+</figure>
+<p>图 7 的组织与内存一一对应：每个 channel 对应一个 <strong>PU</strong>，每个 bank 对应一个 <strong>PE</strong>。PE 的 tensor core 做矩阵乘法，PU 的 SIMD special function engine 做 Softmax、激活等运算；PU 之间用双向环形网络连接，路由器可以边传输边归约数据。这样的划分让矩阵权重从本地 bank 进入 PE，同时给跨 PU 协作保留通信路径。</p>
+<p>每个 PE 有两个与分层直接相关的部件：</p>
+<ul>
+<li><strong>Tiering Table：</strong>保存各档位的行地址边界及 <code>tRCD</code>。一次访问到来时，根据目标行查出应等待多久，快行无需按最慢行的时序等待。</li>
+<li><strong>Row Swap Buffer：</strong>暂存同一 bank 内待交换的两行，再把它们写回新位置。专家权重跨多个 bank 切片，迁移时各 bank 交换自己的那部分数据，避免通过 xPU 搬运完整专家。</li>
+</ul>
+<p>专家热度决定<strong>权重应放在哪些行</strong>，时序表决定<strong>这些行应使用什么访问时序</strong>。当专家被搬到快行，访问就使用快行的时序；行所在物理层的延迟由器件结构决定。</p>
+<figure id="figure-11">
+  <a href="{{ page.url | append: 'figure-11.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 11 清晰版本">
+    <img src="{{ page.url | append: 'figure-11.png' | relative_url }}" alt="图 11：主题切换前后的专家放置与迁移" width="1800" height="947" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 11 · 主题切换前后的专家放置与迁移。原论文 PDF 第 9 页。</figcaption>
+</figure>
+<p>图 11 按速度展示逻辑布局：热专家在最快区域，KV cache 放在中间，冷专家放较慢区域，主要由 xPU 使用的参数放最慢区域。最后一类访问还受 interposer 带宽限制，给它们快层带来的收益较小。<strong>这里图示的上下是放置顺序；物理 WL 阶梯的延迟方向见图 2。</strong></p>
+<p>运行时先离线统计“主题 → 专家使用频率”。在线由轻量主题分类器标记请求，调度器在首 token 等待时间允许的范围内，优先把同主题请求合成一批；再汇总该批次的专家使用概率，生成放置方案。主题变化时，使用 bank 内交换把新的热专家移入快层。主题分类用于预测数据热度，实际 token-to-expert 路由仍由模型的 router 决定。</p>
+
+<h2>§4.2 Attention：按序列切分后，怎样完成 Softmax</h2>
+<p class="section-source">PDF p. 7–8</p>
+<p>在 decode 的 Attention 路径中，xPU 计算 Q、K、V，将它们交给 NMP；新 K、V 加入缓存，NMP 用 Q 访问已有 KV，完成 Attention 并返回结果，供后续网络层继续计算。每次 decode 都要读取增长中的 KV cache，因此这条路径适合利用近存带宽。</p>
+<figure id="figure-10">
+  <a href="{{ page.url | append: 'figure-10.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 10 清晰版本">
+    <img src="{{ page.url | append: 'figure-10.png' | relative_url }}" alt="图 10：Attention 的 head 分组、序列切分及双 head 流水线" width="1800" height="1912" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 10 · Attention 的 head 分组、序列切分及双 head 流水线。原论文 PDF 第 7 页。</figcaption>
+</figure>
+<p>图 10 先把 attention heads 分给不同 PU group，再在组内按<strong>序列长度</strong>切分 K、V。每个 PU 持有一段历史 token 的 KV，并通过组内 all-gather 获得完整 Q。这样各 PU 可以独立计算自己那段分数 $s_i=QK_i^T/\sqrt{d}$，其中 $d$ 为 head 维度；最终 Softmax 的归一化需要覆盖整个序列。</p>
+<ol>
+<li><strong>SM1：求全局最大值。</strong>PU $i$ 先求本地最大值 $m_i$，再交换这些标量，得到 $m=\max_i m_i$。所有 PU 随后使用同一个 $m$，保持数值稳定。</li>
+<li><strong>SM2：计算本地指数与和。</strong>各 PU 计算 $e_i=\exp(s_i-m)$，并求本地和 $\ell_i=\sum_j e_{i,j}$。这一阶段由本地 special function engine 完成。</li>
+<li><strong>SM3：求全局和并归一化。</strong>再进行一轮标量归约，得到 $\ell=\sum_i\ell_i$，各 PU 计算自己持有的概率 $a_i=e_i/\ell$。</li>
+</ol>
+<p>这两轮通信只交换最大值和指数和，无需把整个分数向量集中起来。归一化后，每个 PU 计算局部 $a_iV_i$，再通过 reduce-scatter 将各段贡献相加，并把最终结果分散保存在组内 PU 中。<strong>Softmax 的两轮标量交换与最后的输出归约是不同阶段。</strong></p>
+<p>图 10(c) 解释了为什么每组至少安排两个 head：head 0 在 special function engine 上做 Softmax 或等待通信时，head 1 可以在 PE 上计算 QK；head 0 的输出归约也可与 head 1 的 $aV$ 重叠。新增 KV 按 round-robin 分给组内 PU，使序列增长后各 PU 持有的数据量仍较均衡。</p>
+
+<h2>§4.1 MoE：所有 PU 合作处理一个专家</h2>
+<p class="section-source">PDF p. 6–7</p>
+<p>不同专家收到的 token 数量不同，权重所在层的速度也不同。若把不同专家直接交给不同 PU，各 PU 的完成时间容易拉开。Stratum 让所有 PU 通过 tensor parallelism 合作处理一个专家，再依次处理其他被激活的专家；每个专家内部的权重切分保持一致。</p>
+<figure id="figure-8">
+  <a href="{{ page.url | append: 'figure-08.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 8 清晰版本">
+    <img src="{{ page.url | append: 'figure-08.png' | relative_url }}" alt="图 8：专家计算的矩阵切分与跨 PU 执行步骤" width="1800" height="1198" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 8 · 专家计算的矩阵切分与跨 PU 执行步骤。原论文 PDF 第 6 页。</figcaption>
+</figure>
+<p>图 8(b) 展示一个专家的三次矩阵乘法。设 $X$ 包含送到该专家的 $M$ 个 token，隐藏维度为 $K$，中间维度为 $N$，则 $X$ 为 $M\times K$，$W_1,W_2$ 为 $K\times N$，$W_3$ 为 $N\times K$：</p>
+<p>$$H=\operatorname{SiLU}(XW_1)\odot(XW_2),\qquad Y=HW_3.$$</p>
+<p>这里 $\odot$ 表示逐元素相乘。按中间维度 $N$ 切分后，每个 PU 保存 $W_1,W_2$ 的一组列，以及 $W_3$ 对应的一组行：</p>
+<ul>
+<li>每个 PU 获得完整输入 $X$，计算自己负责的 $H_i$。激活与逐元素乘法都在本地完成。</li>
+<li>$W_3$ 的对应行也在同一 PU，所以 $H_i$ 可以直接进入第三次乘法，得到对完整输出的部分贡献 $Y_i$。</li>
+<li>最后将各 PU 的 $Y_i$ 相加，得到 $Y$。中间维度上的切分让两次升维与一次降维之间无需交换整个中间激活。</li>
+</ul>
+<p>用矩阵维度描述切分，可以直接检查数据依赖：前两次乘法产出的那部分 $N$ 维数据，恰好就是本地 $W_3$ 所需的输入。</p>
+<figure id="figure-9">
+  <a href="{{ page.url | append: 'figure-09.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 9 清晰版本">
+    <img src="{{ page.url | append: 'figure-09.png' | relative_url }}" alt="图 9：专家计算、激活与环网通信的重叠" width="1800" height="800" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 9 · 专家计算、激活与环网通信的重叠。原论文 PDF 第 7 页。</figcaption>
+</figure>
+<p>图 9 的流水线进一步隐藏通信：xPU 先给每个 PU 发送输入的一片，再由内部环网 all-gather 拼出完整输入，减少 interposer 上的重复传输；GEMM2 与 GEMM1 结果的激活计算并行；当前专家的输出 reduce-scatter 与下一个专家的 GEMM1 重叠。一个专家的结果就绪后，special function engine 立即按 router 权重累加，逐步形成最终 MoE 输出。</p>
+
+<h2>§6 实验：收益来自哪里，模型依据是什么</h2>
+<p class="section-source">PDF p. 9–13</p>
+<h3>从器件模型到服务仿真的测量链</h3>
+<p>论文的 Stratum 性能来自器件、电路和系统模型的组合；GPU 基线在真实设备上运行。理解结果需要把每一步的输入来源分开：</p>
+<div class="reading-table"><table>
+<thead><tr><th>对象</th><th>方法与输出</th></tr></thead>
+<tbody>
+<tr><td>Mono3D DRAM</td><td>用 Coventor SEMulator3D 提取阵列 RC 参数，结合 NeuroSim 外围电路结果和 DDR5 时序，得到各层延迟、能耗与带宽。主配置为 1024 层、32 GB、八个档位。</td></tr>
+<tr><td>NMP 逻辑</td><td>以 SystemVerilog 实现，用 Cadence Genus 和 ASAP7 预测工艺库综合；SRAM 用 FinCACTI 建模。综合网表配合随机激励的翻转活动估计能耗，自建模拟器计算矩阵执行及环网通信周期。</td></tr>
+<tr><td>热与功率约束</td><td>HotSpot 在高端液冷、均热板等散热假设下给出约 45 W 的逻辑功率预算，设计估计约 42.67 W。计算规模受这一预算约束。</td></tr>
+<tr><td>GPU 与服务系统</td><td>GPU 基线使用 vLLM 0.8.1，能耗来自 NVIDIA-SMI；系统仿真用泊松请求到达、SLO 约束批处理、主题预测及专家放置，累计 xPU 与 NMP 的延迟和能耗。</td></tr>
+</tbody></table></div>
+
+<h3>先区分近存带宽收益与分层放置收益</h3>
+<figure id="figure-16" class="reading-wide">
+  <a href="{{ page.url | append: 'figure-16.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 16 清晰版本">
+    <img src="{{ page.url | append: 'figure-16.png' | relative_url }}" alt="图 16：GPU、无分层 Stratum 与分层 Stratum 的吞吐及能效" width="2400" height="350" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 16 · GPU、无分层 Stratum 与分层 Stratum 的吞吐及能效。原论文 PDF 第 12 页。</figcaption>
+</figure>
+<p>图 16 比较 GPU、<strong>Stratum no-tiering</strong> 和 <strong>Stratum tiering</strong>。no-tiering 已有 Mono3D DRAM 和 NMP，但所有行统一按最慢时序访问；tiering 加入八档时序与相应数据放置。两者的对照更直接地反映分层机制的增益：OLMoE、Mixtral、Qwen2.5、Llama-4 的平均 decode 吞吐分别再提高约 1.45×、1.39×、1.32×、1.34×。其中 Qwen2.5 是 dense 模型，收益包含 KV 等数据的分层访问优化。</p>
+<p>与 GPU 对比时还要看系统配置：OLMoE 使用 RTX A6000 对 Stratum-S；Mixtral 和 Qwen2.5 使用 2×H100 对 Stratum-L；Llama-4 使用 4×H100 对 Stratum-XL。Stratum-L 含一个 H100 计算 die 和六颗 Mono3D DRAM，XL 为两组 L。各配置按容纳模型及最大测试上下文的需求选择，因此图中的加速同时反映内存容量、内部带宽、近存计算和放置策略。</p>
+
+<h3>热度预测是否有效，交换成本能否摊销</h3>
+<figure id="figure-17">
+  <a href="{{ page.url | append: 'figure-17.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 17 清晰版本">
+    <img src="{{ page.url | append: 'figure-17.png' | relative_url }}" alt="图 17：热专家命中率对 MoE 延迟和整模型吞吐的影响" width="1800" height="720" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 17 · 热专家命中率对 MoE 延迟和整模型吞吐的影响。原论文 PDF 第 12 页。</figcaption>
+</figure>
+<p>图 17 在 Mixtral／Stratum-L 上扫描<strong>热专家命中率</strong>：分配到快层的专家所承接的访问，占全部专家访问的比例。提高该比例，先降低 MoE 层延迟，再提高整模型吞吐。相对专家访问均匀分布的情形，论文报告 1.32–1.51× 的吞吐提升；短序列时 MoE 占总时间更多，放置收益更明显。这项扫描描述预测更准确时的收益空间。</p>
+<p>实际主题分类器在 Chatbot Arena 测试子集上的准确率为 85.0%，论文报告的实际聚合热专家命中率分别为 Mixtral 31.6%、OLMoE 48.5%、Llama-4 68.9%。分类准确率衡量主题标签是否正确，热专家命中率衡量快层承接了多少访问，两者需要分别观察。</p>
+<p>交换成本测试使用 batch=1、输入和输出各 256 tokens，并让相邻批次属于不同主题，以增加迁移频率、减少摊销机会。在这些配置下，专家交换的时间开销为 0.18%–0.37%。低开销依赖于同 bank 内搬移和专用 Row Swap Buffer；实际收益也取决于一套布局能被后续多少次访问复用。</p>
+
+<h3>小 batch、长序列与更多堆叠层，分别改变什么</h3>
+<figure id="figure-18">
+  <a href="{{ page.url | append: 'figure-18.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="查看图 18 清晰版本">
+    <img src="{{ page.url | append: 'figure-18.png' | relative_url }}" alt="图 18：batch 大小与堆叠层数的影响" width="1800" height="670" loading="lazy" decoding="async">
+  </a>
+  <figcaption>图 18 · batch 大小与堆叠层数的影响。原论文 PDF 第 13 页。</figcaption>
+</figure>
+<p>图 18(a) 固定 Llama-4-Scout／Stratum-XL，改变 batch 与序列长度。增大 batch 会提高权重复用和计算强度，GPU 的算力更容易发挥，Stratum 的相对优势因而缩小，短序列时尤其明显。长序列则增加读取 KV 的工作量，强化近存带宽的作用。</p>
+<p>图 18(b) 改变堆叠层数，保持<strong>总 DRAM 容量与 NMP 逻辑设计相同</strong>，比较的是按 DRAM die 面积归一化的吞吐。1024 层相对 256 层和 64 层平均提高约 1.21× 和 2.96×。更多层能减小同容量所需的平面面积，所以这个结果主要支持堆叠的面积效率；它与单请求延迟是不同指标。</p>
