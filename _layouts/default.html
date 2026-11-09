@@ -21,7 +21,7 @@ layout: compress
         {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
         <div class="page__inner-wrap">
           <section class="page__content" itemprop="text">
-            {{ content }}
+            {{ content | replace: '<a href="">', '<a class="link-placeholder">' }}
           </section>
         </div>
       </article>

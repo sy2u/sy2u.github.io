@@ -22,27 +22,32 @@ My research interests include Computer Architecture and Electronic Design Automa
 
 
 # 🔥 News
-- Jul/2026: &nbsp; 🎉🎉 Our work FlashGPU-sim is accepted by MICRO 2026!
+- Jul/2026: &nbsp; 🎉🎉 Our work FlashGPU-sim is accepted by MICRO 2026! ([photo](images/micro2026.jpg))  
 - Jun/2025: &nbsp; Graduated from University of Illinois Urbana-Champaign ([photo](images/uiuc_commencement.jpg)) and Zhejiang University ([photo](images/zju_commencement.jpg)).
 - May/2025: &nbsp; Honored to have my undergraduate journey highlighted in a feature article. ([ZJUI-News](https://mp.weixin.qq.com/s/Jj4wU9RhvVGYad-gluZGow))
 
 
 
 # 📝 Publications 
-### First-Authored
-- [C2] FlashGPU-sim: Enabling GPU Modeling for Modern Architectures and AI Workloads ([pdf](docs/MICRO2026-FlashGPU-sim.pdf))  
+- [C5] Differentiable Timing-Driven Hybrid Bonding Terminal Assignment for Face-to-Face Stacked 3D ICs  
+  Mingjun Li, *Siying Yu*, Lancheng Zou, Siting Liu, Xuanqi Chen, Bei Yu  
+  2027 ACM International Symposium on Physical Design (**ISPD**)
+
+- [C4] SUSim: Tightly Coupled GPU–Memory–Fabric Simulation for NVIDIA Scale-Up Systems  
+  Chenbo Geng, Mingyuan Zu, Zhe Liu, Muzi Xiao, Jinhan Sun, Chenxing Zhao, Konglin Lu, Zhuoshan Zhou, *Siying Yu*, Bei Yu, Zhigang Ji, Jieru Zhao, Guanghui He, Zhengrong Wang, Chen Zhang  
+  2027 IEEE International Symposium on High-Performance Computer Architecture (**HPCA**)
+
+- [C3] HeteroOpt3D: Timing Optimization for Heterogeneous Hybrid-bonding-based Face-to-Face 3D ICs  
+  Yuhao Ji, *Siying Yu*, Yunqi Shi, Fangzhou Liu, Yuxuan Zhao, Jiaxi Jiang, Zizheng Guo, Chao Qian, Yibo Lin, Bei Yu   
+  2026 IEEE/ACM 45th International Conference on Computer-Aided Design (**ICCAD**)
+
+- [C2] FlashGPU-sim: Enabling GPU Modeling for Modern Architectures and AI Workloads [[paper](docs/MICRO2026-FlashGPU-sim.pdf)] [[code](https://github.com/FlashGPU-Sim/FlashGPU-Sim)] [[slides](docs/MICRO2026-FlashGPU-sim-slides.pdf)] [[poster](docs/MICRO2026-FlashGPU-sim-poster.pdf)]  
   **Siying Yu**, Yixun Hong, Guozhi Qiu, Jingci Liu, Feng Gu, Chenbo Geng, Zhengrong Wang, Chen Zhang, Bei Yu  
   2026 IEEE/ACM 59th International Symposium on Microarchitecture (**MICRO**) <span class="artifact-badges-inline" aria-label="FlashGPU-Sim artifact badges"><a class="artifact-badge" href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener noreferrer" title="ACM Artifacts Available"><img src="{{ '/images/badges/acm-artifacts-available.png' | relative_url }}" alt="ACM Artifacts Available badge"></a><a class="artifact-badge" href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener noreferrer" title="ACM Artifacts Evaluated — Functional"><img src="{{ '/images/badges/acm-artifacts-evaluated-functional.png' | relative_url }}" alt="ACM Artifacts Evaluated — Functional badge"></a><a class="artifact-badge" href="https://www.acm.org/publications/policies/artifact-review-and-badging-current" target="_blank" rel="noopener noreferrer" title="ACM Results Reproduced"><img src="{{ '/images/badges/acm-results-reproduced.png' | relative_url }}" alt="ACM Results Reproduced badge"></a></span>  
-  <span class="repository-link" aria-label="FlashGPU-Sim repository link"><a class="github-repo-link" href="https://github.com/FlashGPU-Sim/FlashGPU-Sim" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i><span>Simulator</span></a></span>
 
-### Co-Authored
-- [C3] HeteroOpt3D: Timing Optimization for Heterogeneous Hybrid-bonding-based Face-to-Face 3D ICs  
-  Yuhao Ji, **Siying Yu**, Yunqi Shi, Fangzhou Liu, Yuxuan Zhao, Jiaxi Jiang, Zizheng Guo, Chao Qian, Yibo Lin, Bei Yu   
-  2026 IEEE/ACM 46th International Conference on Computer-Aided Design (**ICCAD**)
-
-- [C1] [GPU Acceleration for Versatile Buffer Insertion](https://ieeexplore.ieee.org/document/11240837) ([pdf](docs/ICCAD2025-BIGX.pdf))  
-  Yuan Pu\*, Yuhao Ji\*, **Siying Yu**, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu  
-  2025 IEEE/ACM 45th International Conference on Computer-Aided Design (**ICCAD**)  
+- [C1] [GPU Acceleration for Versatile Buffer Insertion](https://ieeexplore.ieee.org/document/11240837) [[paper](docs/ICCAD2025-BIGX.pdf)]  
+  Yuan Pu\*, Yuhao Ji\*, *Siying Yu*, Zuodong Zhang, Zizheng Guo, Zhuolun He, Yibo Lin, David Z. Pan, Bei Yu  
+  2025 IEEE/ACM 44th International Conference on Computer-Aided Design (**ICCAD**)  
 
 
 
@@ -72,10 +77,9 @@ My research interests include Computer Architecture and Electronic Design Automa
 
 
 # 📖 Academic Services
-- Program Committee Member: 
-  - [MICRO 2026 Artifact Evaluation](https://www.microarch.org/micro59/submit/artifacts.php) 
-- External Reviewer: 
-  - ASPDAC 2026, DAC 2026, FPL 2026, ICCAD 2026, ICCD 2026, HPCA 2027
+- Artifact Evaluation Committee: MICRO 2026  
+- External Reviewer: FPL 2026
+- Secondary Reviewer: ASPDAC 2026, DAC 2026, ICCAD 2026, ICCD 2026, HPCA 2027
 
 
 

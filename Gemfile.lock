@@ -308,7 +308,6 @@ PLATFORMS
 DEPENDENCIES
   github-pages
   hawkins
-  jekyll-feed
   jekyll-sitemap
   webrick
 
